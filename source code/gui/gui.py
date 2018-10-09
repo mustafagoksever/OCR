@@ -1,42 +1,38 @@
-import tkinter as tk
-from tkinter import filedialog as fd
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
 
 
-class Browse(tk.Frame):
-    """ Creates a frame that contains a button when clicked lets the user to select
-    a file and put its filepath into an entry.
-    """
+class GUI(Tk):
 
-    def __init__(self, master, initialdir='', filetypes=()):
-        super().__init__(master)
-        self.filepath = tk.StringVar()
-        self._initaldir = initialdir
-        self._filetypes = filetypes
-        self._create_widgets()
-        self._display_widgets()
 
-    def _create_widgets(self):
-        self._entry = tk.Entry(self, textvariable=self.filepath)
-        self._button = tk.Button(self, text="Browse...", command=self.browse)
+    def __init__(self):
+        super(GUI,self).__init__()
+        self.title("OCR")
+        self.minsize(1080,540)
+        self.wm_iconbitmap('myicon.ico')
+        self.configure(background = '#4D4D4D')
+        self.labelFrame = ttk.LabelFrame(self, text = "Open New Picture")
+        self.labelFrame.grid(column=0,row=1,padx=20,pady= 20)
 
-    def _display_widgets(self):
-        self._entry.pack(fill='x', expand=True)
-        self._button.pack(anchor='se')
+        self.button()
 
-    def browse(self):
-        """ Browses a .png file or all files and then puts it on the entry.
-        """
 
-        self.filepath.set(fd.askopenfilename(initialdir=self._initaldir,
-                                             filetypes=self._filetypes))
+    def button(self):
+        self.button=ttk.Button(self.labelFrame,text = "Browse",command = self.filedialog)
+        self.button.grid(column=1,row=1)
+
+
+    def filedialog(self):
+        self.filename = filedialog.askopenfilename(initialdir = "/",title = "Select a Picture",filetype = (('jpeg','*.jpg'),('png','*.png') ))
+        self.label = ttk.Label(self.labelFrame,text="")
+        self.label.grid(column =1 ,row = 2)
+        self.label.configure(text= self.filename)
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
 
-    file_browser = Browse(root, initialdir=r"C:\Users",
-                                filetypes=(('Portable Network Graphics','*.png'),
-                                                            ("All files", "*.*")))
-    file_browser.pack(fill='x', expand=True)
 
-    root.mainloop()
+    myGUI = GUI()
+    myGUI.mainloop()
+
