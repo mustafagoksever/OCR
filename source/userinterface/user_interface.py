@@ -3,13 +3,13 @@ from tkinter import ttk
 from tkinter import filedialog
 
 
-class GUI(Tk):
+class user_interface(Tk):
 
 
     def __init__(self):
-        super(GUI,self).__init__()
+        super(user_interface,self).__init__()
         self.title("OCR")
-        self.minsize(1080,540)
+        self.minsize(720,540)
         self.wm_iconbitmap('myicon.ico')
         self.configure(background = '#4D4D4D')
         self.labelFrame = ttk.LabelFrame(self, text = "Open New Picture")
@@ -30,9 +30,5 @@ class GUI(Tk):
         self.label.configure(text= self.filename)
 
 
-if __name__ == '__main__':
 
-
-    myGUI = GUI()
-    myGUI.mainloop()
 
