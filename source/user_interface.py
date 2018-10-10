@@ -30,8 +30,13 @@ class userinterface(Tk):
         self.label.grid(column =1 ,row = 2)
         self.label.configure(text = self.filename)
         self.image_path = self.filename
-        image = cv2.imread(self.filename)
-        cv2.imshow("Selected Image", image)
+        image = cv2.imread(self.filename) # gray_image = cv2.imread(self.filename,0)
+        gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        #binary_image = cv2.cvtColor()
+        ret,binary = cv2.threshold(gray_image,127,256,cv2.THRESH_BINARY)
+        cv2.imshow("Original Image", image)
+        cv2.imshow("Selected Image was converted to gray", gray_image)
+        cv2.imshow("Selected Image was converted to binary", binary)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
