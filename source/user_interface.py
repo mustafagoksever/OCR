@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 import cv2
+from matplotlib import pyplot as plt
 
 class userinterface(Tk):
 
@@ -32,13 +33,24 @@ class userinterface(Tk):
         self.image_path = self.filename
         image = cv2.imread(self.filename) # gray_image = cv2.imread(self.filename,0)
         gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-        #binary_image = cv2.cvtColor()
         ret,binary = cv2.threshold(gray_image,127,256,cv2.THRESH_BINARY)
+        # normal show
         cv2.imshow("Original Image", image)
         cv2.imshow("Selected Image was converted to gray", gray_image)
-        cv2.imshow("Selected Image was converted to binary", binary)
+        cv2.imshow("Gray Image was converted to binary", binary)
+        # pyplots
+
+        plt.subplot(131),plt.imshow(image,cmap='gray')
+        plt.title('Original Image'),plt.xticks([]),plt.yticks([])
+        plt.subplot(132), plt.imshow(gray_image, cmap='gray')
+        plt.title('Selected Image was converted to gray'), plt.xticks([]), plt.yticks([])
+        plt.subplot(133), plt.imshow(binary, cmap='gray')
+        plt.title('Gray Image was converted to binary'), plt.xticks([]), plt.yticks([])
+        plt.show()
+
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+
 
     def get_ImagePath(self):
         return self.image_path
