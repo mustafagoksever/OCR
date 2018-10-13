@@ -3,6 +3,12 @@ from tkinter import ttk
 from tkinter import filedialog
 import cv2
 from matplotlib import pyplot as plt
+import numpy as np
+
+MIN_CONTOUR_AREA = 100
+
+RESIZED_IMAGE_WIDTH = 20
+RESIZED_IMAGE_HEIGHT = 30
 
 class userinterface(Tk):
 
@@ -33,20 +39,33 @@ class userinterface(Tk):
         self.image_path = self.filename
         image = cv2.imread(self.filename) # gray_image = cv2.imread(self.filename,0)
         gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
+        thresh_image = cv2.adaptiveThreshold(blurred_image,  # input image
+                                          255,  # make pixels that pass the threshold full white
+                                          cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                          # use gaussian rather than mean, seems to give better results
+                                          cv2.THRESH_BINARY_INV,
+                                          # invert so foreground will be white, background will be black
+                                          11,  # size of a pixel neighborhood used to calculate threshold value
+                                          2)  # constant subtracted from the mean or weighted mean
+
+
         ret,binary = cv2.threshold(gray_image,127,256,cv2.THRESH_BINARY)
         # normal show
         cv2.imshow("Original Image", image)
         cv2.imshow("Selected Image was converted to gray", gray_image)
+        cv2.imshow("Gray Image was converted to Gaussian Blur", blurred_image)
+        cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
         cv2.imshow("Gray Image was converted to binary", binary)
         # pyplots
 
-        plt.subplot(131),plt.imshow(image,cmap='gray')
-        plt.title('Original Image'),plt.xticks([]),plt.yticks([])
-        plt.subplot(132), plt.imshow(gray_image, cmap='gray')
-        plt.title('Selected Image was converted to gray'), plt.xticks([]), plt.yticks([])
-        plt.subplot(133), plt.imshow(binary, cmap='gray')
-        plt.title('Gray Image was converted to binary'), plt.xticks([]), plt.yticks([])
-        plt.show()
+        # plt.subplot(131),plt.imshow(image,cmap='gray')
+        # plt.title('Original Image'),plt.xticks([]),plt.yticks([])
+        # plt.subplot(132), plt.imshow(gray_image, cmap='gray')
+        # plt.title('Selected Image was converted to gray'), plt.xticks([]), plt.yticks([])
+        # plt.subplot(133), plt.imshow(binary, cmap='gray')
+        # plt.title('Gray Image was converted to binary'), plt.xticks([]), plt.yticks([])
+        # plt.show()
 
         cv2.waitKey(0)
         cv2.destroyAllWindows()
