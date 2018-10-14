@@ -5,10 +5,6 @@ import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 
-MIN_CONTOUR_AREA = 100
-
-RESIZED_IMAGE_WIDTH = 20
-RESIZED_IMAGE_HEIGHT = 30
 
 class userinterface(Tk):
 
@@ -56,7 +52,7 @@ class userinterface(Tk):
         cv2.imshow("Selected Image was converted to gray", gray_image)
         cv2.imshow("Gray Image was converted to Gaussian Blur", blurred_image)
         cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
-        cv2.imshow("Gray Image was converted to binary", binary)
+        #cv2.imshow("Gray Image was converted to binary", binary)
         # pyplots
 
         # plt.subplot(131),plt.imshow(image,cmap='gray')
@@ -66,6 +62,7 @@ class userinterface(Tk):
         # plt.subplot(133), plt.imshow(binary, cmap='gray')
         # plt.title('Gray Image was converted to binary'), plt.xticks([]), plt.yticks([])
         # plt.show()
+
 
         cv2.waitKey(0)
         cv2.destroyAllWindows()
