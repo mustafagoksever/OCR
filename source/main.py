@@ -5,7 +5,7 @@ if __name__ == '__main__':
 
    
     myGUI = userinterface()
-    #deneme
+    #deneme merge
 
 
     myGUI.mainloop()
