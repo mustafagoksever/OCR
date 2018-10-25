@@ -59,7 +59,10 @@ class userinterface(Tk):
             (x, y, w, h) = cv2.boundingRect(contour)
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
             imgROI = binary[y:y + h, x:x + w]
+            # imgROIResized = cv2.resize(imgROI, (RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT))
             cv2.imshow("imroi" , imgROI)
+            intChar = cv2.waitKey(0)
+            print("img roi gosterildi")
         # Adataset = cv2.imread("A.png", 0)
         # ret, binarydataset = cv2.threshold(Adataset, 127, 256, cv2.THRESH_BINARY_INV)
         #
