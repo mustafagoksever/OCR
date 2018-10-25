@@ -51,7 +51,8 @@ class userinterface(Tk):
 
         ret,binary = cv2.threshold(blurred_image,127,256,cv2.THRESH_BINARY_INV)
 
-        im2, contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        im2, contours, hierarchy = cv2.findContours(binary, cv2.RETR_EXTERNAL,  # retrieve the outermost contours only
+                                                 cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal segments and leave only their end points
 
         # cv2.drawContours(image, contours, -1, (0, 255, 0), 3)
 
