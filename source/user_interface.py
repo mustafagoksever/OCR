@@ -39,15 +39,15 @@ class userinterface(Tk):
 
         gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
         blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
-        thresh_image = cv2.adaptiveThreshold(blurred_image,  # input image
-                                          255,  # make pixels that pass the threshold full white
-                                          cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                          # use gaussian rather than mean, seems to give better results
-                                          cv2.THRESH_BINARY_INV,
-                                          # invert so foreground will be white, background will be black
-                                          11,  # size of a pixel neighborhood used to calculate threshold value
-                                          2)  # constant subtracted from the mean or weighted mean
-        # adaptive de biraz gurultu var duzelt
+        # thresh_image = cv2.adaptiveThreshold(blurred_image,  # input image
+        #                                   255,  # make pixels that pass the threshold full white
+        #                                   cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        #                                   # use gaussian rather than mean, seems to give better results
+        #                                   cv2.THRESH_BINARY_INV,
+        #                                   # invert so foreground will be white, background will be black
+        #                                   11,  # size of a pixel neighborhood used to calculate threshold value
+        #                                   2)  # constant subtracted from the mean or weighted mean
+        # # adaptive de biraz gurultu var duzelt
 
         ret,binary = cv2.threshold(blurred_image,127,256,cv2.THRESH_BINARY_INV)
 
@@ -55,31 +55,38 @@ class userinterface(Tk):
                                                  cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal segments and leave only their end points
 
         # cv2.drawContours(image, contours, -1, (0, 255, 0), 3)
+        a = 0
 
         for contour in contours:
             (x, y, w, h) = cv2.boundingRect(contour)
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
             imgROI = binary[y:y + h, x:x + w]
-            # imgROIResized = cv2.resize(imgROI, (RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT))
-            cv2.imshow("imroi" , imgROI)
+            imgROIResized = cv2.resize(imgROI, (50, 50))
+            cv2.imshow("Detected this Character", imgROIResized)
+            cv2.imwrite("roi/"+str(a) + '.png', imgROIResized)
+
             intChar = cv2.waitKey(0)
-            print("img roi gosterildi")
-        # Adataset = cv2.imread("A.png", 0)
-        # ret, binarydataset = cv2.threshold(Adataset, 127, 256, cv2.THRESH_BINARY_INV)
-        #
-        # we,he = imgROI.shape[::-1]
-        # res = cv2.matchTemplate(binarydataset,imgROI,cv2.TM_CCOEFF_NORMED)
-        # threshold = 0.8
-        # loc = np.where(res>threshold)
-        # for n in zip(*loc[::-1]):
-        #     cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,255),2)
-        #     print("A")
-        # cv2.imshow("A dataset",Adataset)
+            a = a+1
+
+
+            # Adataset = cv2.imread("A.png")
+            # Adataset_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            # ret, binarydataset = cv2.threshold(Adataset_gray, 127, 256, cv2.THRESH_BINARY_INV)
+            #
+            # we,he = imgROI.shape[::-1]
+            # res = cv2.matchTemplate(binarydataset,imgROI,cv2.TM_CCOEFF_NORMED)
+            # threshold = 0.6
+            # loc = np.where(res>threshold)
+            # for n in zip(*loc[::-1]):
+            #     cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,0),2)
+            #     print("A")
+            # cv2.imshow("A dataset",Adataset)
+
         # normal show
         cv2.imshow("Original Image", image)
         cv2.imshow("Selected Image was converted to gray", gray_image)
         cv2.imshow("Gray Image was converted to Gaussian Blur", blurred_image)
-        cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
+        # cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
         cv2.imshow("Gray Image was converted to binary", binary)
         # pyplots
 
