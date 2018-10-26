@@ -10,6 +10,7 @@ import numpy as np
 class userinterface(Tk):
 
     filename : object
+
     image_path = ""
     def __init__(self):
         super(userinterface,self).__init__()
@@ -24,17 +25,20 @@ class userinterface(Tk):
         self.button()
 
         self.button2()
-
+        self.button3()
 
     def button(self):
         self.button=ttk.Button(self.labelFrame,text = "Browse",command = self.filedialog)
         self.button.grid(column=1,row=1)
 
     def button2(self):
-        self.button2=ttk.Button(self.labelFrame,text = "pre process and Segmentation",command = self.imagetotext)
+        self.button2=ttk.Button(self.labelFrame,text = "Preprocess",command = self.preproces)
         self.button2.grid(column=1,row=2)
         self.button2.configure(state=DISABLED)
-
+    def button3(self):
+        self.button3=ttk.Button(self.labelFrame,text = "Segmentation",command = self.segmentation)
+        self.button3.grid(column=1,row=3)
+        self.button3.configure(state=DISABLED)
     def filedialog(self):
         self.filename = filedialog.askopenfilename(initialdir = "/",title = "Select a Picture",filetype = (('jpeg','*.jpg'),('png','*.png') ))
 
@@ -42,22 +46,22 @@ class userinterface(Tk):
             self.button2.configure(state=NORMAL)
             self.image_path = self.filename
         else :
-            messagebox.showerror("Error", "You did not select any photo! browse again")
+            messagebox.showerror("Error", "You did not select any photo! Browse again!")
 
 
     def get_ImagePath(self):
         return self.image_path
 
 
-    def imagetotext(self):
+    def preproces(self):
 
-        image = cv2.imread(self.image_path)  # gray_image = cv2.imread(self.filename,0)
-        cv2.imshow("Original Image", image)
+        self.image = cv2.imread(self.image_path)  # gray_image = cv2.imread(self.filename,0)
+        cv2.imshow("Original Image", self.image)
         intChar = cv2.waitKey(0)
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        cv2.imshow("Selected Image was converted to gray", gray_image)
+        self.gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        cv2.imshow("Selected Image was converted to gray", self.gray_image)
         intChar = cv2.waitKey(0)
-        blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
+        self.blurred_image = cv2.GaussianBlur(self.gray_image, (5, 5), 0)
         # thresh_image = cv2.adaptiveThreshold(blurred_image,  # input image
         #                                   255,  # make pixels that pass the threshold full white
         #                                   cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -67,14 +71,20 @@ class userinterface(Tk):
         #                                   11,  # size of a pixel neighborhood used to calculate threshold value
         #                                   2)  # constant subtracted from the mean or weighted mean
         # # adaptive de biraz gurultu var duzelt
-        cv2.imshow("Gray Image was converted to Gaussian Blur", blurred_image)
+        cv2.imshow("Gray Image was converted to Gaussian Blur", self.blurred_image)
         # cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
         intChar = cv2.waitKey(0)
 
-        ret, binary = cv2.threshold(blurred_image, 127, 256, cv2.THRESH_BINARY_INV)
-        cv2.imshow("Gray Image was converted to binary", binary)
+        ret, self.binary = cv2.threshold(self.blurred_image, 127, 256, cv2.THRESH_BINARY_INV)
+        cv2.imshow("Gray Image was converted to binary", self.binary)
         intChar = cv2.waitKey(0)
-        im2, contours, hierarchy = cv2.findContours(binary, cv2.RETR_EXTERNAL,  # retrieve the outermost contours only
+        messagebox.showinfo("Steps", "Preprocess done! Segmentation is starting...")
+        cv2.destroyAllWindows()
+        self.button3.configure(state=NORMAL)
+    def segmentation(self):
+
+
+        im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,  # retrieve the outermost contours only
                                                     cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal segments and leave only their end points
 
         # cv2.drawContours(image, contours, -1, (0, 255, 0), 3)
@@ -82,11 +92,12 @@ class userinterface(Tk):
 
         for contour in contours:
             (x, y, w, h) = cv2.boundingRect(contour)
-            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            imgROI = binary[y:y + h, x:x + w]
+            cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            imgROI = self.binary[y:y + h, x:x + w]
             imgROIResized = cv2.resize(imgROI, (50, 50))
+            cv2.imshow("Original Image", self.image)
             cv2.imshow("Detected this Character", imgROIResized)
-            cv2.imshow("Original Image", image)
+
             cv2.imwrite("roi/" + str(a) + '.png', imgROIResized)
 
             intChar = cv2.waitKey(0)
@@ -104,10 +115,15 @@ class userinterface(Tk):
             #     cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,0),2)
             #     print("A")
             # cv2.imshow("A dataset",Adataset)
-
+        messagebox.showinfo("Steps", "Segmentation done!!")
         # normal show
 
-        # pyplots
+
+
+
+
+        cv2.destroyAllWindows()
+ # pyplots
 
         #
         # plt.subplot(151),plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
@@ -122,7 +138,3 @@ class userinterface(Tk):
         # plt.subplot(155), plt.imshow(binary, cmap='gray')
         # plt.title('Binary '), plt.xticks([]), plt.yticks([])
         # plt.show()
-
-
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
