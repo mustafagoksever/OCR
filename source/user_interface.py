@@ -1,15 +1,15 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 
 
 class userinterface(Tk):
-#isdafghdfsa
-#dsa
-    filename: object
+
+    filename : object
     image_path = ""
     def __init__(self):
         super(userinterface,self).__init__()
@@ -23,21 +23,37 @@ class userinterface(Tk):
 
         self.button()
 
+        self.button2()
+
 
     def button(self):
         self.button=ttk.Button(self.labelFrame,text = "Browse",command = self.filedialog)
         self.button.grid(column=1,row=1)
 
+    def button2(self):
+        self.button2=ttk.Button(self.labelFrame,text = "pre process and Segmentation",command = self.imagetotext)
+        self.button2.grid(column=1,row=2)
+        self.button2.configure(state=DISABLED)
 
     def filedialog(self):
         self.filename = filedialog.askopenfilename(initialdir = "/",title = "Select a Picture",filetype = (('jpeg','*.jpg'),('png','*.png') ))
-        self.label = ttk.Label(self.labelFrame,text="")
-        self.label.grid(column =1 ,row = 2)
-        self.label.configure(text = self.filename)
-        self.image_path = self.filename
-        image = cv2.imread(self.filename) # gray_image = cv2.imread(self.filename,0)
 
-        gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        if self.filename is not "":
+            self.button2.configure(state=NORMAL)
+            self.image_path = self.filename
+        else :
+            messagebox.showerror("Error", "You did not select any photo! browse again")
+
+
+    def get_ImagePath(self):
+        return self.image_path
+
+
+    def imagetotext(self):
+
+        image = cv2.imread(self.image_path)  # gray_image = cv2.imread(self.filename,0)
+
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
         # thresh_image = cv2.adaptiveThreshold(blurred_image,  # input image
         #                                   255,  # make pixels that pass the threshold full white
@@ -49,10 +65,10 @@ class userinterface(Tk):
         #                                   2)  # constant subtracted from the mean or weighted mean
         # # adaptive de biraz gurultu var duzelt
 
-        ret,binary = cv2.threshold(blurred_image,127,256,cv2.THRESH_BINARY_INV)
+        ret, binary = cv2.threshold(blurred_image, 127, 256, cv2.THRESH_BINARY_INV)
 
         im2, contours, hierarchy = cv2.findContours(binary, cv2.RETR_EXTERNAL,  # retrieve the outermost contours only
-                                                 cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal segments and leave only their end points
+                                                    cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal segments and leave only their end points
 
         # cv2.drawContours(image, contours, -1, (0, 255, 0), 3)
         a = 0
@@ -63,11 +79,10 @@ class userinterface(Tk):
             imgROI = binary[y:y + h, x:x + w]
             imgROIResized = cv2.resize(imgROI, (50, 50))
             cv2.imshow("Detected this Character", imgROIResized)
-            cv2.imwrite("roi/"+str(a) + '.png', imgROIResized)
+            cv2.imwrite("roi/" + str(a) + '.png', imgROIResized)
 
             intChar = cv2.waitKey(0)
-            a = a+1
-
+            a = a + 1
 
             # Adataset = cv2.imread("A.png")
             # Adataset_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -107,9 +122,3 @@ class userinterface(Tk):
 
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-
-
-    def get_ImagePath(self):
-        return self.image_path
-
-
