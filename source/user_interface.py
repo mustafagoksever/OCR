@@ -88,10 +88,13 @@ class userinterface(Tk):
                                                     cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal segments and leave only their end points
 
         # cv2.drawContours(image, contours, -1, (0, 255, 0), 3)
-        a = 0
+        # contours.sort(key=lambda c: np.min(c[:, :, 0]))
+        sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * self.image.shape[1])
 
-        for contour in contours:
+
+        for a, contour in enumerate(sorted_ctrs):
             (x, y, w, h) = cv2.boundingRect(contour)
+
             cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
             imgROI = self.binary[y:y + h, x:x + w]
             imgROIResized = cv2.resize(imgROI, (50, 50))
@@ -101,7 +104,7 @@ class userinterface(Tk):
             cv2.imwrite("roi/" + str(a) + '.png', imgROIResized)
 
             intChar = cv2.waitKey(0)
-            a = a + 1
+
 
             # Adataset = cv2.imread("A.png")
             # Adataset_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
