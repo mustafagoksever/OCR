@@ -86,13 +86,17 @@ class userinterface(Tk):
 
         im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,  # retrieve the outermost contours only
                                                     cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal segments and leave only their end points
+        # hierarchy inner outer nesne takibi icin kullaniliyor
 
-        # cv2.drawContours(image, contours, -1, (0, 255, 0), 3)
+
+        # cv2.drawContours(self.image, contours, -1, (0, 255, 0), 3)
         # contours.sort(key=lambda c: np.min(c[:, :, 0]))
-        sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * self.image.shape[1])
+        contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * self.image.shape[1])
 
 
-        for a, contour in enumerate(sorted_ctrs):
+        # for a, contour in enumerate(sorted_ctrs):
+        for a,contour in enumerate(contours):
+
             (x, y, w, h) = cv2.boundingRect(contour)
 
             cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -106,26 +110,53 @@ class userinterface(Tk):
             intChar = cv2.waitKey(0)
 
 
-            # Adataset = cv2.imread("A.png")
-            # Adataset_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            # ret, binarydataset = cv2.threshold(Adataset_gray, 127, 256, cv2.THRESH_BINARY_INV)
-            #
-            # we,he = imgROI.shape[::-1]
-            # res = cv2.matchTemplate(binarydataset,imgROI,cv2.TM_CCOEFF_NORMED)
-            # threshold = 0.6
-            # loc = np.where(res>threshold)
-            # for n in zip(*loc[::-1]):
-            #     cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,0),2)
-            #     print("A")
-            # cv2.imshow("A dataset",Adataset)
-        messagebox.showinfo("Steps", "Segmentation done!!")
-        # normal show
+            Adataset = cv2.imread("dataset/A.png")
+            Adataset_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+            ret, binarydataset = cv2.threshold(Adataset_gray, 127, 256, cv2.THRESH_BINARY_INV)
+
+            we,he = imgROI.shape[::-1]
+            res = cv2.matchTemplate(binarydataset,imgROI,cv2.TM_CCOEFF_NORMED)
+            threshold = 0.8
+            loc = np.where(res >= threshold)
+            for n in zip(*loc[::-1]):
+                cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,0),2)
+                print("A")
+            cv2.imshow("A dataset",Adataset)
+        messagebox.showinfo("Steps", "Segmentation done!! Contours were saved!")
+
 
 
 
 
 
         cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  # pyplots
 
         #
