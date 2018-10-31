@@ -16,14 +16,16 @@ import string
 
 for x  in list (string.ascii_lowercase ):
     img = np.zeros((60, 60,3), np.uint8)
+    img.fill(255)
     font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(img,x,(5,45), font, 2,(255,255,255),2,cv2.LINE_AA)
+    cv2.putText(img,x,(5,45), font, 2,(0,0,0),2,cv2.LINE_AA)
     cv2.imshow("dataset",img)
     cv2.imwrite("dataset/"+x+"Low.png",img)
 for x  in list (string.ascii_uppercase ):
     img = np.zeros((60, 60,3), np.uint8)
+    img.fill(255)
     font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(img,x,(5,45), font, 2,(255,255,255),2,cv2.LINE_AA)
+    cv2.putText(img,x,(5,45), font, 2,(0,0,0),2,cv2.LINE_AA)
     cv2.imshow("dataset",img)
     cv2.imwrite("dataset/"+x+"Upper.png",img)
 cv2.waitKey(0)
