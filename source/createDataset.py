@@ -15,19 +15,19 @@ import string
 fonts = [cv2.FONT_HERSHEY_COMPLEX,cv2.FONT_HERSHEY_COMPLEX_SMALL, cv2.FONT_HERSHEY_DUPLEX,cv2.FONT_HERSHEY_PLAIN,cv2.FONT_HERSHEY_SIMPLEX,cv2.FONT_HERSHEY_TRIPLEX,cv2.FONT_ITALIC]
 
 for x  in list (string.ascii_lowercase ):
-    img = np.zeros((60, 400,3), np.uint8)
+    img = np.zeros((80, 360,3), np.uint8)
     img.fill(255)
     for a,font in zip( range(0,9),fonts):
         konum= 5+a*40
-        cv2.putText(img, x, (konum, 45), font, 2, (0, 0, 0), 2, cv2.LINE_AA)
+        cv2.putText(img, x, (konum, 60), font, 2, (0, 0, 0), 2, cv2.LINE_AA)
         cv2.imshow("dataset",img)
         cv2.imwrite("dataset/"+x+"Low.png",img)
 for x  in list (string.ascii_uppercase ):
-    img = np.zeros((60, 400,3), np.uint8)
+    img = np.zeros((80, 360,3), np.uint8)
     img.fill(255)
     for a, font in zip(range(0, 9), fonts):
         konum = 5 + a * 45
-        cv2.putText(img,x,(konum,45), font, 2,(0,0,0),2,cv2.LINE_AA)
+        cv2.putText(img,x,(konum,60), font, 2,(0,0,0),2,cv2.LINE_AA)
         cv2.imshow("dataset",img)
         cv2.imwrite("dataset/"+x+"Upper.png",img)
 
