@@ -8,13 +8,13 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 
-class userinterface(Tk):
+class UserInterface(Tk):
 
     filename : object
 
     image_path = ""
     def __init__(self):
-        super(userinterface,self).__init__()
+        super(UserInterface,self).__init__()
         self.title("OCR")
         self.minsize(720,540)
 
@@ -57,11 +57,12 @@ class userinterface(Tk):
     def preproces(self):
 
         self.image = cv2.imread(self.image_path)  # gray_image = cv2.imread(self.filename,0)
+
         cv2.imshow("Original Image", self.image)
-        intChar = cv2.waitKey(0)
+        cv2.waitKey(0)
         self.gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        cv2.imshow("Selected Image was converted to gray", self.gray_image)
-        intChar = cv2.waitKey(0)
+        cv2.imshow("Gray Image", self.gray_image)
+        cv2.waitKey(0)
         self.blurred_image = cv2.GaussianBlur(self.gray_image, (5, 5), 0)
         # thresh_image = cv2.adaptiveThreshold(blurred_image,  # input image
         #                                   255,  # make pixels that pass the threshold full white
@@ -72,28 +73,28 @@ class userinterface(Tk):
         #                                   11,  # size of a pixel neighborhood used to calculate threshold value
         #                                   2)  # constant subtracted from the mean or weighted mean
         # # adaptive de biraz gurultu var duzelt
-        cv2.imshow("Gray Image was converted to Gaussian Blur", self.blurred_image)
+        cv2.imshow("Gaussian Blur Image", self.blurred_image)
         # cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
-        intChar = cv2.waitKey(0)
+        cv2.waitKey(0)
 
         ret, self.binary = cv2.threshold(self.blurred_image, 127, 256, cv2.THRESH_BINARY_INV)
-        cv2.imshow("Gray Image was converted to binary", self.binary)
-        intChar = cv2.waitKey(0)
-        messagebox.showinfo("Steps", "Preprocess done! Segmentation is starting...")
+        cv2.imshow("Binary Image", self.binary)
+        cv2.waitKey(0)
+        messagebox.showinfo("Steps", "Preprocessed done! You can push Segmentation Button")
         cv2.destroyAllWindows()
         self.button3.configure(state=NORMAL)
     def segmentation(self):
 
 
         im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,  # retrieve the outermost contours only
-                                                    cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal segments and leave only their                                                                               end points
+                                                    cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal           segments and leave only their                                                                               end points
         # hierarchy inner outer nesne takibi icin kullaniliyor
 
 
         # cv2.drawContours(self.image, contours, -1, (0, 255, 0), 3)
         contours.sort(key=lambda c: np.min(c[:, :, 0]))
         contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * self.image.shape[1])
-        # contours.sort(key=operator.attrgetter("intRectX"))
+        # contours.sort(key=operator.attrgetter("0"))
 
         # for a, contour in enumerate(sorted_ctrs):
         for a,contour in enumerate(contours):
@@ -101,38 +102,42 @@ class userinterface(Tk):
             (x, y, w, h) = cv2.boundingRect(contour)
 
             cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            imgROI = self.binary[y:y + h, x:x + w]
+            imgROI = self.gray_image[y:y + h, x:x + w]
             # imgROI = cv2.resize(imgROI, (50, 50))
             cv2.imshow("Original Image", self.image)
-            cv2.imshow("Detected this Character", imgROI)
+            cv2.imshow("ROI", imgROI)
 
             cv2.imwrite("roi/" + str(a) + '.png', imgROI)
 
-            intChar = cv2.waitKey(0)
-            messagebox.showinfo("Steps", "Segmentation done!! Contours were saved!")
-            cv2.destroyAllWindows()
-
-            Adataset = cv2.imread("dataset/AUpper.png")
-            Adataset_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-            ret, binarydataset = cv2.threshold(Adataset_gray, 127, 256, cv2.THRESH_BINARY_INV)
-            binarydataset = cv2.resize(binarydataset, (50, 50))
-            imgROI = cv2.resize(imgROI, (50, 50))
-            # cv2.imshow("binary dataset",binarydataset)
-
-            we,he = imgROI.shape[::-1]
-            res = cv2.matchTemplate(binarydataset,imgROI,cv2.TM_CCOEFF_NORMED)
-            threshold = 0.6
-            loc = np.where(res >= threshold)
-            for n in zip(*loc[::-1]):
-                cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,0),2)
-                print("A bulundu... ")
-            cv2.imshow("dataset bulunan harf",Adataset)
-            cv2.imshow("im roi bulunan harf",imgROI)
             cv2.waitKey(0)
 
+            cv2.destroyAllWindows()
 
+            # Adataset = cv2.imread("dataset/AUpper.png")
+            # Adataset_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+            # ret, binarydataset = cv2.threshold(Adataset_gray, 127, 256, cv2.THRESH_BINARY_INV)
+            # # binarydataset = cv2.resize(binarydataset, (50, 50))
+            # # imgROI = cv2.resize(imgROI, (50, 50))
+            # # cv2.imshow("binary dataset",binarydataset)
+            #
+            # we,he = imgROI.shape[::-1]
+            # res = cv2.matchTemplate(Adataset_gray,imgROI,cv2.TM_CCOEFF_NORMED)
+            # threshold = 0.5
+            #
+            # loc = np.where(res >= threshold)
+            # for n in zip(*loc[::-1]):
+            #     cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,0),2)
+            #     print("a buldum")
+            #     messagebox.showinfo("A", "A BULDUM")
+            #     cv2.imshow("dataset bulunan harf",Adataset)
+            #     cv2.imshow("im roi bulunan harf",imgROI)
+            #     cv2.waitKey(0)
+            #     cv2.destroyAllWindows()
+            # cv2.waitKey(0)
 
-
+        messagebox.showinfo("Steps", "Segmentation done!! Contours were saved!")
+        self.button3.configure(state=DISABLED)
+        self.button2.configure(state=DISABLED)
         cv2.destroyAllWindows()
 
 
