@@ -95,8 +95,12 @@ class UserInterface(Tk):
         contours.sort(key=lambda c: np.min(c[:, :, 0]))
         contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * self.image.shape[1])
         # contours.sort(key=operator.attrgetter("0"))
+        #         # sort kisminda gelistirmeler yapilacak....
+        #         # line segmentation yaparak siralama
+        #         # moment ortalamaasi olarak dusun sirala
+        #         # knn
 
-        # for a, contour in enumerate(sorted_ctrs):
+
         for a,contour in enumerate(contours):
 
             (x, y, w, h) = cv2.boundingRect(contour)
@@ -122,8 +126,8 @@ class UserInterface(Tk):
             #
             # we,he = imgROI.shape[::-1]
             # res = cv2.matchTemplate(Adataset_gray,imgROI,cv2.TM_CCOEFF_NORMED)
-            # threshold = 0.5
-            #
+            # threshold             = 0.5
+            # min max ekle
             # loc = np.where(res >= threshold)
             # for n in zip(*loc[::-1]):
             #     cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,0),2)
@@ -181,3 +185,19 @@ class UserInterface(Tk):
         # plt.subplot(155), plt.imshow(binary, cmap='gray')
         # plt.title('Binary '), plt.xticks([]), plt.yticks([])
         # plt.show()
+
+        # // / Calculate
+        # the
+        # area
+        # with the moments 00 and compare with the result of the OpenCV function
+        # printf("\t Info: Area and Contour Length \n");
+        # for (int i = 0; i < contours.size(); i++ )
+        # {
+        #     printf(" * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f \n", i, mu[i].m00,
+        #            contourArea(contours[i]), arcLength(contours[i], true));
+        # Scalar
+        # color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+        # drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
+        # circle(drawing, mc[i], 4, color, -1, 8, 0);
+        # }
+        # }

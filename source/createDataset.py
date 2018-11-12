@@ -12,6 +12,9 @@ import string
 # FONT_HERSHEY_SIMPLEX
 # FONT_HERSHEY_TRIPLEX
 # FONT_ITALIC
+
+#  more fonts arial vs https://www.codesofinterest.com/2017/07/more-fonts-on-opencv.html
+
 fonts = [cv2.FONT_HERSHEY_COMPLEX,cv2.FONT_HERSHEY_COMPLEX_SMALL, cv2.FONT_HERSHEY_DUPLEX,cv2.FONT_HERSHEY_PLAIN,cv2.FONT_HERSHEY_SIMPLEX,cv2.FONT_HERSHEY_TRIPLEX,cv2.FONT_ITALIC]
 
 for x  in list (string.ascii_lowercase ):
@@ -31,10 +34,10 @@ for x  in list (string.ascii_uppercase ):
         cv2.imshow("dataset",img)
         cv2.imwrite("dataset/"+x+"Upper.png",img)
 
-# img = np.zeros((60, 250,3), np.uint8)
+# img = np.zeros((80, 250,3), np.uint8)
 # img.fill(255)
 # font = cv2.FONT_HERSHEY_SIMPLEX
-# cv2.putText(img,"ANKARA",(5,45), font, 2,(0,0,0),2,cv2.LINE_AA)
+# cv2.putText(img,"ANKARA",(5,60), font, 2,(0,0,0),2,cv2.LINE_AA)
 # cv2.imwrite("ankara.png",img)
-cv2.waitKey(0)
+# cv2.waitKey(0)
 cv2.destroyAllWindows()
