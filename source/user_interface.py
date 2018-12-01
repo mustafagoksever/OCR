@@ -6,12 +6,13 @@ import cv2
 import operator
 from matplotlib import pyplot as plt
 import numpy as np
+import string
 
 
 class UserInterface(Tk):
 
     filename : object
-
+    text = ""
     image_path = ""
     def __init__(self):
         super(UserInterface,self).__init__()
@@ -73,11 +74,11 @@ class UserInterface(Tk):
         #                                   11,  # size of a pixel neighborhood used to calculate threshold value
         #                                   2)  # constant subtracted from the mean or weighted mean
         # # adaptive de biraz gurultu var duzelt
-        cv2.imshow("Gaussian Blur Image", self.blurred_image)
+        # cv2.imshow("Gaussian Blur Image", self.blurred_image)
         # cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
         cv2.waitKey(0)
 
-        ret, self.binary = cv2.threshold(self.blurred_image, 127, 256, cv2.THRESH_BINARY_INV)
+        ret, self.binary = cv2.threshold(self.gray_image, 127, 256, cv2.THRESH_BINARY_INV)
         cv2.imshow("Binary Image", self.binary)
         cv2.waitKey(0)
         messagebox.showinfo("Steps", "Preprocessed done! You can push Segmentation Button")
@@ -113,37 +114,45 @@ class UserInterface(Tk):
 
             cv2.imwrite("roi/" + str(a) + '.png', imgROI)
 
+
+
+            for x in list(string.ascii_uppercase):
+                Adataset = cv2.imread("dataset/"+x+".png")
+                Adataset_gray = cv2.cvtColor(Adataset, cv2.COLOR_BGR2GRAY)
+                ret,binarydataset = cv2.threshold(Adataset_gray, 127, 256, cv2.THRESH_BINARY_INV)
+                # binarydataset = cv2.resize(binarydataset, (50, 50))
+                # imgROI = cv2.resize(imgROI, (80, 60))
+                # cv2.imshow("binary dataset",binarydataset)
+                we,he = imgROI.shape[::-1]
+                res = cv2.matchTemplate(Adataset_gray,imgROI,cv2.TM_CCOEFF_NORMED)
+                threshold = 0.8
+
+
+                # min max ekle
+                min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+                top_left = max_loc
+                bottom_right = (top_left[0] + we, top_left[1] + he)
+                if(max_val >= threshold):
+                    print(x+" bulundu....")
+                    self.text = self.text + x
+
             cv2.waitKey(0)
-
             cv2.destroyAllWindows()
-
-            # Adataset = cv2.imread("dataset/AUpper.png")
-            # Adataset_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-            # ret, binarydataset = cv2.threshold(Adataset_gray, 127, 256, cv2.THRESH_BINARY_INV)
-            # # binarydataset = cv2.resize(binarydataset, (50, 50))
-            # # imgROI = cv2.resize(imgROI, (50, 50))
-            # # cv2.imshow("binary dataset",binarydataset)
-            #
-            # we,he = imgROI.shape[::-1]
-            # res = cv2.matchTemplate(Adataset_gray,imgROI,cv2.TM_CCOEFF_NORMED)
-            # threshold             = 0.5
-            # min max ekle
             # loc = np.where(res >= threshold)
             # for n in zip(*loc[::-1]):
             #     cv2.rectangle(Adataset,n,(n[0]+we,n[1]+he),(0,255,0),2)
             #     print("a buldum")
             #     messagebox.showinfo("A", "A BULDUM")
-            #     cv2.imshow("dataset bulunan harf",Adataset)
-            #     cv2.imshow("im roi bulunan harf",imgROI)
+            #     # cv2.imshow("dataset bulunan harf",Adataset)
+            #     # cv2.imshow("im roi bulunan harf",imgROI)
             #     cv2.waitKey(0)
             #     cv2.destroyAllWindows()
-            # cv2.waitKey(0)
 
-        messagebox.showinfo("Steps", "Segmentation done!! Contours were saved!")
+
+        messagebox.showinfo("Steps", "Segmentation done!! Contours were saved! The text is " + self.text)
         self.button3.configure(state=DISABLED)
         self.button2.configure(state=DISABLED)
         cv2.destroyAllWindows()
-
 
 
 
