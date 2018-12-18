@@ -7,22 +7,27 @@ import operator
 from matplotlib import pyplot as plt
 import numpy as np
 import string
+from PIL import ImageTk, Image
 
-
-class UserInterface(Tk):
+class GenerateData(Tk):
 
     filename : object
     text = ""
     image_path = ""
+    Datasetpanel :object
     def __init__(self):
-        super(UserInterface,self).__init__()
+        super(GenerateData,self).__init__()
         self.title("OCR")
         self.minsize(720,540)
 
         self.wm_iconbitmap('myicon.ico')
         self.configure(background = '#FFFFFF')
-        self.labelFrame = ttk.LabelFrame(self, text = "Open New Picture")
+        self.labelFrame = ttk.LabelFrame(self, text = "OCR Steps")
+
         self.labelFrame.grid(column=0,row=1,padx=20,pady= 20)
+        self.DatasetFrame = ttk.LabelFrame(self, text="Dataset")
+
+        self.DatasetFrame.grid(column=0, row=2, padx=20, pady=20)
 
         self.button()
 
@@ -38,7 +43,7 @@ class UserInterface(Tk):
         self.button2.grid(column=1,row=2)
         self.button2.configure(state=DISABLED)
     def button3(self):
-        self.button3=ttk.Button(self.labelFrame,text = "Segmentation",command = self.segmentation)
+        self.button3=ttk.Button(self.labelFrame,text = "Segmentation and Generate Data",command = self.segmentation)
         self.button3.grid(column=1,row=3)
         self.button3.configure(state=DISABLED)
     def filedialog(self):
@@ -47,6 +52,13 @@ class UserInterface(Tk):
         if self.filename is not "":
             self.button2.configure(state=NORMAL)
             self.image_path = self.filename
+            img = ImageTk.PhotoImage(Image.open(self.image_path))
+
+            self.Datasetpanel = ttk.Label(self.DatasetFrame, image=img)
+            self.DatasetFrame.image = img
+            self.Datasetpanel.grid(column=0, row=0)
+            # panel.pack(side="bottom", fill="both", expand="yes")
+            # panel.pack()
         else :
             messagebox.showerror("Error", "You did not select any photo! Browse again!")
 
@@ -73,9 +85,7 @@ class UserInterface(Tk):
         #                                   # invert so foreground will be white, background will be black
         #                                   11,  # size of a pixel neighborhood used to calculate threshold value
         #                                   2)  # constant subtracted from the mean or weighted mean
-        # # adaptive de biraz gurultu var duzelt
-        # cv2.imshow("Gaussian Blur Image", self.blurred_image)
-        # cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
+
         cv2.waitKey(0)
 
         ret, self.binary = cv2.threshold(self.gray_image, 127, 256, cv2.THRESH_BINARY_INV)
@@ -87,9 +97,8 @@ class UserInterface(Tk):
     def segmentation(self):
 
 
-        im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,  # retrieve the outermost contours only
-                                                    cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal           segments and leave only their                                                                               end points
-        # hierarchy inner outer nesne takibi icin kullaniliyor
+        im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,
+                                                    cv2.CHAIN_APPROX_SIMPLE)
 
         npaFlattenedImages = np.empty((0, 20 * 30))
 
@@ -99,7 +108,8 @@ class UserInterface(Tk):
 
         intValidChars = [ord('0'), ord('1'), ord('2'), ord('3'), ord('4'), ord('5'), ord('6'), ord('7'), ord('8'), ord('9'), ord('A'), ord('B'), ord('C'), ord('D'), ord('E'), ord('F'), ord('G'), ord('H'), ord('I'), ord('J'),ord('K'), ord('L'), ord('M'), ord('N'), ord('O'), ord('P'), ord('Q'), ord('R'), ord('S'),ord('T'),ord('U'), ord('V'), ord('W'), ord('X'), ord('Y'), ord('Z')]
 
-        for npaContour in contours:                          # for each contour
+        for npaContour in contours:
+            # for each contour
             if cv2.contourArea(npaContour) > 100:          # if contour is big enough to consider
                 [intX, intY, intW, intH] = cv2.boundingRect(npaContour)         # get and break out bounding rect
 
@@ -116,6 +126,7 @@ class UserInterface(Tk):
             cv2.imshow("imgROI", imgROI)                    # show cropped out char for reference
             cv2.imshow("imgROIResized", imgROIResized)      # show resized image for reference
             cv2.imshow("training_numbers.png", self.image)      # show training numbers image, this will now have red rectangles drawn on it
+
 
             intChar = cv2.waitKey(0)                     # get key press
 
@@ -322,3 +333,8 @@ class UserInterface(Tk):
         # circle(drawing, mc[i], 4, color, -1, 8, 0);
         # }
         # }
+
+if __name__ == '__main__':
+    myGUI = GenerateData()
+
+    myGUI.mainloop()
