@@ -17,24 +17,23 @@ RESIZED_IMAGE_HEIGHT = 30
 
 class ContourWithData():
 
-    # member variables ############################################################################
-    npaContour = None           # contour
-    boundingRect = None         # bounding rect for contour
-    intRectX = 0                # bounding rect top left corner x location
-    intRectY = 0                # bounding rect top left corner y location
-    intRectWidth = 0            # bounding rect width
-    intRectHeight = 0           # bounding rect height
-    fltArea = 0.0               # area of contour
+    npaContour = None
+    boundingRect = None
+    intRectX = 0
+    intRectY = 0
+    intRectWidth = 0
+    intRectHeight = 0
+    fltArea = 0.0
 
-    def calculateRectTopLeftPointAndWidthAndHeight(self):               # calculate bounding rect info
+    def calculateRectTopLeftPointAndWidthAndHeight(self):
         [intX, intY, intWidth, intHeight] = self.boundingRect
         self.intRectX = intX
         self.intRectY = intY
         self.intRectWidth = intWidth
         self.intRectHeight = intHeight
 
-    def checkIfContourIsValid(self):                            # this is oversimplified, for a production grade program
-        if self.fltArea < MIN_CONTOUR_AREA: return False        # much better validity checking would be necessary
+    def checkIfContourIsValid(self):
+        if self.fltArea < MIN_CONTOUR_AREA: return False
         return True
 
 
@@ -43,7 +42,7 @@ class Train_Test(Tk):
     filename : object
     text = ""
     image_path = ""
-    allContoursWithData = []  # declare empty lists,
+    allContoursWithData = []
     validContoursWithData = []
     kNearest : object
     npaROIResized :object
@@ -128,20 +127,19 @@ class Train_Test(Tk):
 
         im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
-        for npaContour in contours:  # for each contour
-            contourWithData = ContourWithData()  # instantiate a contour with data object
-            contourWithData.npaContour = npaContour  # assign contour to contour with data
-            contourWithData.boundingRect = cv2.boundingRect(contourWithData.npaContour)  # get the bounding rect
-            contourWithData.calculateRectTopLeftPointAndWidthAndHeight()  # get bounding rect info
-            contourWithData.fltArea = cv2.contourArea(contourWithData.npaContour)  # calculate the contour area
+        for npaContour in contours:
+            contourWithData = ContourWithData()
+            contourWithData.npaContour = npaContour  #
+            contourWithData.boundingRect = cv2.boundingRect(contourWithData.npaContour)
+            contourWithData.calculateRectTopLeftPointAndWidthAndHeight()
+            contourWithData.fltArea = cv2.contourArea(contourWithData.npaContour)
             self.allContoursWithData.append(
-                contourWithData)  # add contour with data object to list of all contours with data
-        # end for
+                contourWithData)
 
         self.allContoursWithData.sort(key=operator.attrgetter("intRectX"))
         for a,contourWithData in enumerate(self.allContoursWithData):  # for all contours
-            if contourWithData.checkIfContourIsValid():  # check if valid
-                self.validContoursWithData.append(contourWithData)# if so, append to valid contour list
+            if contourWithData.checkIfContourIsValid():
+                self.validContoursWithData.append(contourWithData)
                 (x, y, w, h) = cv2.boundingRect(contourWithData.npaContour)
 
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -153,8 +151,7 @@ class Train_Test(Tk):
 
                 cv2.imwrite("roi/" + str(a) + '.png', imgROI)
                 cv2.waitKey(0)
-            # end if
-        # end for
+
 
         # contours.sort(key=lambda c: np.min(c[:, :, 0]))
         # contours = sorted(contours,
@@ -181,32 +178,30 @@ class Train_Test(Tk):
         self.button4.configure(state=NORMAL)
     def test(self):
         try:
-            npaClassifications = np.loadtxt("classifications.txt", np.float32)  # read in training classifications
+            npaClassifications = np.loadtxt("Classifications.txt", np.float32)
         except:
             print("error, unable to open classifications.txt, exiting program\n")
             os.system("pause")
             return
-            # end try
 
         try:
-            npaFlattenedImages = np.loadtxt("flattened_images.txt", np.float32)  # read in training images
+            npaFlattenedImages = np.loadtxt("Flattened_images.txt", np.float32)
         except:
             print("error, unable to open flattened_images.txt, exiting program\n")
             os.system("pause")
             return
-            # end try
 
-        npaClassifications = npaClassifications.reshape(
-            (npaClassifications.size, 1))  # reshape numpy array to 1d, necessary to pass to call to train
+        npaClassifications = npaClassifications.reshape((npaClassifications.size, 1))
+        # reshape numpy array to 1d, necessary to pass to call to train
 
         self.kNearest = cv2.ml.KNearest_create()  # instantiate KNN object
 
         self.kNearest.train(npaFlattenedImages, cv2.ml.ROW_SAMPLE, npaClassifications)
 
 
-        for contourWithData in self.validContoursWithData:  # for each contour
-            # draw a green rect around the current char
-            cv2.rectangle(self.image,  # draw rectangle on original testing image
+        for contourWithData in self.validContoursWithData:
+
+            cv2.rectangle(self.image,
                           (contourWithData.intRectX, contourWithData.intRectY),  # upper left corner
                           (contourWithData.intRectX + contourWithData.intRectWidth,
                            contourWithData.intRectY + contourWithData.intRectHeight),  # lower right corner
@@ -217,30 +212,30 @@ class Train_Test(Tk):
                      # crop char out of threshold image
                      contourWithData.intRectX: contourWithData.intRectX + contourWithData.intRectWidth]
 
-            imgROIResized = cv2.resize(imgROI, (RESIZED_IMAGE_WIDTH,
-                                                RESIZED_IMAGE_HEIGHT))  # resize image, this will be more consistent for recognition and storage
+            imgROIResized = cv2.resize(imgROI, (RESIZED_IMAGE_WIDTH,RESIZED_IMAGE_HEIGHT))
 
             self.npaROIResized = imgROIResized.reshape(
                 (1, RESIZED_IMAGE_WIDTH * RESIZED_IMAGE_HEIGHT))  # flatten image into 1d numpy array
 
             self.npaROIResized = np.float32(self.npaROIResized)  # convert from 1d numpy array of ints to 1d numpy array of floats
-            retval, npaResults, neigh_resp, dists = self.kNearest.findNearest(self.npaROIResized,
-                                                                         k=1)  # call KNN function find_nearest
+            retval, npaResults, neigh_resp, dists = self.kNearest.findNearest(self.npaROIResized,k=1)
+            # call KNN function find_nearest
 
-            strCurrentChar = str(chr(int(npaResults[0][0])))  # get character from results
+            strCurrentChar = str(chr(int(npaResults[0][0])))
 
-            self.strFinalString = self.strFinalString + strCurrentChar  # append current char to full string
-        # end for
+            self.strFinalString = self.strFinalString + strCurrentChar
 
-        print("\n" + self.strFinalString + "\n")  # show the full string
 
-        cv2.imshow("imgTestingNumbers",
-                   self.image)  # show input image with green boxes drawn around found digits
+        print("\n" + self.strFinalString + "\n")
+
+        cv2.imshow("imgTestingNumbers",self.image)
+
+        messagebox.showinfo("Result", "The text is " + self.strFinalString)
         cv2.waitKey(0)
 
 if __name__ == "__main__":
     myGUI = Train_Test()
     myGUI.mainloop()
-        # end if
+
 
 
