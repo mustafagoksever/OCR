@@ -12,14 +12,14 @@ class userInterface(Tk):
     filename : object
     text = ""
     image_path = ""
-    
+    counter =0
     page1 :object
     page2 :object
     page3 :object
     page4 :object
     binaryImage :object
     myOcr :object
-
+    DatasetFrame :object
     def __init__(self):
         super(userInterface,self).__init__()
 
@@ -27,13 +27,15 @@ class userInterface(Tk):
 
         self.title("OCR")
         self.minsize(900,600)
+        self.maxsize(900,600)
+
         self.wm_iconbitmap('myicon.ico')
-        self.configure(background='#FFFFFF')
+        self.configure(background='#FFFFFF',)
         self.createMenu()
         self.createTabs()
 
         self.train()
-
+        self.matchTemplate()
 
     def createTabs(self):
         tab_control = ttk.Notebook(self,width= self.winfo_width(),height=self.winfo_height())
@@ -86,43 +88,104 @@ class userInterface(Tk):
         helpmenu.add_command(label="About...")
         menubar.add_cascade(label="Help", menu=helpmenu)
         self.config(menu=menubar)
+
+
+
     def train(self):
-        self.labelFrame = ttk.LabelFrame(self.page1, text="OCR Steps")
 
-        self.labelFrame.grid(column=0, row=1, padx=20, pady=20)
-        # self.DatasetFrame = ttk.LabelFrame(self.page1, text="Dataset")
-        self.browseButton = ttk.Button(self.labelFrame, text="Browse" ,command = self.filedialogTrain)
-        self.browseButton.grid(column=1, row=1)
-
-        self.preprocessButton = ttk.Button(self.labelFrame, text="Preprocess", command = lambda: self.myOcr.preprocess(self.image_path) and self.segmentationButton.configure(state=NORMAL))
+        self.browseButton = ttk.Button(self.page1, text="Browse" ,command = self.filedialogTrain)
+        # self.browseButton.pack()
+        self.browseButton.place(x=20,y=20)
+        self.DatasetFrame = ttk.LabelFrame(self.page1, text="Dataset")
 
 
-        # cv2.imshow("command donus",self.binaryImage)
-        self.preprocessButton.grid(column=1, row=2)
+        self.preprocessButton = ttk.Button(self.page1, text="Preprocess", command = lambda: [self.myOcr.preprocess() , self.segmentationButton.configure(state=NORMAL)] )
         self.preprocessButton.configure(state=DISABLED)
-        self.segmentationButton = ttk.Button(self.labelFrame,
-                                  text="Segmentation" )#,command = self.segmentation)
-        self.segmentationButton.grid(column=1, row=3)
-        self.segmentationButton.configure(state=DISABLED)
+        self.preprocessButton.place(x=20,y=60)
 
-        # self.DatasetFrame.grid(column=0, row=2, padx=0, pady=0)
-        # if self.filename is not "":
+
+
+        # enter binding yap
+        self.segmentationButton = ttk.Button(self.page1,
+                                  text="Segmentation" ,command =lambda: self.myOcr.segmentation() )
+        self.segmentationButton.bind('<Button-1>',self.entryEnable)
+        self.segmentationButton.configure(state=DISABLED)
+        self.segmentationButton.place(x=20,y=100)
+
+
+        self.entry = ttk.Entry(self.page1, text="character")
+        self.entry.configure(state=DISABLED)
+        self.entry.place(x=20,y=140)
+        self.exitButton = ttk.Button(self.page1,
+                                     text="Exit", command=sys.exit)
+        self.exitButton.place(x=800,y=500)
+        self.state = ttk.Label(self.page1,text="Mustafa")
+        self.state.place(x=200,y=20)
+
+
+
+
+
+
+    def entryEnable(self,event):
+        self.entry.configure(state=NORMAL)
+
+    def matchTemplate(self):
+        self.browseButtonMatch = ttk.Button(self.page2, text="Browse", command=self.filedialogMatch)
+        self.browseButtonMatch.grid(column=1, row=1)
+
+
+    def filedialogMatch(self):
+
+        self.filename = filedialog.askopenfilename(initialdir="/", title="Select a Picture",
+                                                   filetype=(('jpeg', '*.jpg'), ('png', '*.png')))
+        if self.filename is not None:
+            messagebox.showerror("Error", "You did not select any photo! Browse again!")
+        else:
+            self.myOcr = OCR.Ocr(filename=self.filename)
+            self.showDataset(self.filename)
+            self.image_path = self.filename
+            # img = ImageTk.PhotoImage(Image.open(self.image_path))
+
+
+    def showDataset(self,filename):
+        # img = ImageTk.PhotoImage(Image.open(filename))
+        # if self.counter == 0:
         #     self.Datasetpanel = ttk.Label(self.DatasetFrame, image=img)
-        #     self.DatasetFrame.image = img
         #     self.Datasetpanel.grid(column=0, row=0)
+        #     self.DatasetFrame.place(x=20, y=200)
+        #     print("ilk resim olustu")
+        # self.DatasetFrame.image = (img)
+        # print(filename)
+        # print(self.counter)
+        # self.counter=self.counter+1
+        # ikinci browse yaptiginda eski nesneyi silcek yeniden eklicek
+        image = Image.open(filename)
+        image = image.resize((300, 300), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(image)
+        self.Datasetpanel = ttk.Label(self.DatasetFrame, image=img)
+        self.Datasetpanel.grid(column=0, row=0)
+        self.DatasetFrame.place(x=20, y=200)
+        self.DatasetFrame.image = (img)
 
 
 
     def filedialogTrain(self):
+
+        self.filename=""
         self.filename = filedialog.askopenfilename(initialdir = "/",title = "Select a Picture",filetype = (('jpeg','*.jpg'),('png','*.png') ))
 
-        if self.filename is not "":
-            self.myOcr = OCR.Ocr()
-            self.preprocessButton.configure(state=NORMAL)
-            self.image_path = self.filename
-            # img = ImageTk.PhotoImage(Image.open(self.image_path))
-        else :
+        if self.filename is "":
             messagebox.showerror("Error", "You did not select any photo! Browse again!")
+
+        else:
+            self.myOcr = OCR.Ocr(filename=self.filename)
+
+
+
+            self.state.config(text="ocr objesi olustu")
+            self.showDataset(self.filename)
+            self.preprocessButton.configure(state=NORMAL)
 
 
     def get_ImagePath(self):
