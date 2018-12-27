@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
 from PIL import ImageTk, Image
-
+import numpy as np
 from source import OCR
 import cv2
 
@@ -107,14 +107,14 @@ class userInterface(Tk):
 
         # enter binding yap
         self.segmentationButton = ttk.Button(self.page1,
-                                  text="Segmentation" ,command =lambda: self.myOcr.segmentation() )
+                                  text="Segmentation" ,command =lambda: self.myOcr.segmentation())
         self.segmentationButton.bind('<Button-1>',self.entryEnable)
         self.segmentationButton.configure(state=DISABLED)
         self.segmentationButton.place(x=20,y=100)
 
 
         self.entry = ttk.Entry(self.page1, text="character")
-        self.entry.configure(state=DISABLED)
+        #self.entry.configure(state=DISABLED)
         self.entry.place(x=20,y=140)
         self.exitButton = ttk.Button(self.page1,
                                      text="Exit", command=sys.exit)
@@ -142,13 +142,13 @@ class userInterface(Tk):
         if self.filename is not None:
             messagebox.showerror("Error", "You did not select any photo! Browse again!")
         else:
-            self.myOcr = OCR.Ocr(filename=self.filename)
-            self.showDataset(self.filename)
+            self.myOcr = OCR.Ocr(filename=self.filename,gui=myGUI)
+            self.showDatasetFromFileName(self.filename)
             self.image_path = self.filename
             # img = ImageTk.PhotoImage(Image.open(self.image_path))
 
 
-    def showDataset(self,filename):
+    def showDatasetFromFileName(self,filename):
         # img = ImageTk.PhotoImage(Image.open(filename))
         # if self.counter == 0:
         #     self.Datasetpanel = ttk.Label(self.DatasetFrame, image=img)
@@ -161,14 +161,34 @@ class userInterface(Tk):
         # self.counter=self.counter+1
         # ikinci browse yaptiginda eski nesneyi silcek yeniden eklicek
         image = Image.open(filename)
-        image = image.resize((300, 300), Image.ANTIALIAS)
+        image = image.resize((600, 200), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(image)
         self.Datasetpanel = ttk.Label(self.DatasetFrame, image=img)
         self.Datasetpanel.grid(column=0, row=0)
         self.DatasetFrame.place(x=20, y=200)
         self.DatasetFrame.image = (img)
 
+    def showDatasetfromImage(self, imageParam):
 
+        imageParam = cv2.resize(imageParam,(600, 200))
+        image = Image.fromarray(imageParam)
+
+        image = ImageTk.PhotoImage(image)
+
+    #   im_pil = Image.fromarray(imageParam)
+
+    #   # For reversing the operation:
+    #   im_image = np.asarray(im_pil)
+    #  # image = Image.fromarray(im_image)
+    #   img = ImageTk.PhotoImage(image =im_image)
+
+    #  # c = [[0] * k * im.width for i in range(k * im.height)]
+
+
+        self.Datasetpanel = ttk.Label(self.DatasetFrame, image=image)
+        self.Datasetpanel.grid(column=0, row=0)
+        self.DatasetFrame.place(x=20, y=200)
+        self.DatasetFrame.image = (image)
 
     def filedialogTrain(self):
 
@@ -179,12 +199,9 @@ class userInterface(Tk):
             messagebox.showerror("Error", "You did not select any photo! Browse again!")
 
         else:
-            self.myOcr = OCR.Ocr(filename=self.filename)
-
-
-
+            self.myOcr = OCR.Ocr(filename=self.filename,gui=myGUI)
             self.state.config(text="ocr objesi olustu")
-            self.showDataset(self.filename)
+            self.showDatasetFromFileName(self.filename)
             self.preprocessButton.configure(state=NORMAL)
 
 

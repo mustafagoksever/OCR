@@ -3,22 +3,37 @@ from tkinter import messagebox
 import numpy as np
 from PIL import ImageTk, Image
 import sys
+
+from source.UserInterface import userInterface
+
 class Ocr():
     image :object
     binaryImage :object
-    def __init__(self,filename):
+
+
+    def __init__(self,filename,gui):
+        self.gui = gui
         self.image_path =filename
         self.image = cv2.imread(self.image_path)
         print("ocr nesnesi olustu")
-    def preprocess(self,):
-          # gray_image = cv2.imread(self.filename,0)
-        cv2.imshow("Original Image", self.image)
+    def showDatasetfromImage(self,image,string):
+
+        self.gui.showDatasetfromImage(image)
+        self.gui.DatasetFrame.configure(text=string)
+        self.gui.update()
+
         cv2.waitKey(0)
+
+    def preprocess(self):
+
         gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        cv2.imshow("Gray Image", gray_image)
-        cv2.waitKey(0)
+        #cv2.imshow("Gray Image", gray_image)
+
+        self.showDatasetfromImage(gray_image,"Gray Image")
+
         blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
-        cv2.imshow("Blurred Image", blurred_image)
+       # cv2.imshow("Blurred Image", blurred_image)
+        self.showDatasetfromImage(blurred_image, "Blurred Image")
         self.binaryImage = cv2.adaptiveThreshold(blurred_image,
                                           255,
                                           cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -31,9 +46,11 @@ class Ocr():
         cv2.waitKey(0)
 
         # ret, binary = cv2.threshold(gray_image, 127, 256, cv2.THRESH_BINARY_INV)
-        cv2.imshow("Binary Image", self.binaryImage)
-        cv2.waitKey(0)
-        messagebox.showinfo("Steps", "Preprocessed done! You can push Segmentation Button")
+       # cv2.imshow("Binary Image", self.binaryImage)
+       # cv2.waitKey(0)#
+        self.showDatasetfromImage(self.binaryImage, "Binary Image")
+
+        #messagebox.showinfo("Steps", "Preprocessed done! You can push Segmentation Button")
         cv2.destroyAllWindows()
 
 
@@ -41,7 +58,6 @@ class Ocr():
         return self.image
 
     def segmentation(self):
-
 
         im2, contours, hierarchy = cv2.findContours(self.binaryImage, cv2.RETR_EXTERNAL,
                                                     cv2.CHAIN_APPROX_SIMPLE)
@@ -73,6 +89,12 @@ class Ocr():
 
 
             intChar = cv2.waitKey(0)
+
+
+            self.gui.state.config(text=str(intChar))
+            #gui.mainLoop()
+            self.gui.showDatasetFromFileName("dataset.jpg")
+            self.gui.update()
 
             if intChar == 27:                   # esc
                 sys.exit()
