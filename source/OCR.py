@@ -1,4 +1,7 @@
 import cv2
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
 from tkinter import messagebox
 import numpy as np
 from PIL import ImageTk, Image
@@ -16,16 +19,18 @@ class Ocr():
         self.image_path =filename
         self.image = cv2.imread(self.image_path)
         print("ocr nesnesi olustu")
+
     def showDatasetfromImage(self,image,string):
 
         self.gui.showDatasetfromImage(image)
         self.gui.DatasetFrame.configure(text=string)
         self.gui.update()
 
-        cv2.waitKey(0)
-
+        # cv2.waitKey(0)
+    #     next butonunu bekleme olayi
     def preprocess(self):
 
+        self.gui.nextStepButton.configure(state=NORMAL)
         gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         #cv2.imshow("Gray Image", gray_image)
 
@@ -80,24 +85,18 @@ class Ocr():
             imgROI = self.binaryImage[intY:intY+intH, intX:intX+intW]
             imgROIResized = cv2.resize(imgROI, (20, 30))
             # cv2.imshow("imgROI", imgROI)
-            cv2.imshow("imgROIResized", imgROIResized)
+            # cv2.imshow("imgROIResized", imgROIResized)
 
 
 
 
             cv2.imshow("Training Numbers", self.image)
-
+            self.showDatasetfromImage(self.image,"Training Numbers Segmentation")
 
             intChar = cv2.waitKey(0)
 
-
-            self.gui.state.config(text=str(intChar))
-            #gui.mainLoop()
-            self.gui.showDatasetFromFileName("dataset.jpg")
-            self.gui.update()
-
             if intChar == 27:                   # esc
-                sys.exit()
+               sys.exit()
             elif intChar in intValidChars:
                 intClassifications.append(intChar)
 

@@ -143,23 +143,15 @@ class userInterface(Tk):
             messagebox.showerror("Error", "You did not select any photo! Browse again!")
         else:
             self.myOcr = OCR.Ocr(filename=self.filename,gui=myGUI)
+            self.nextStepButton = ttk.Button(self.page1,text="Next")
+            self.nextStepButton.configure(state=DISABLED)
+            self.nextStepButton.place(x=650, y=380)
             self.showDatasetFromFileName(self.filename)
             self.image_path = self.filename
             # img = ImageTk.PhotoImage(Image.open(self.image_path))
 
 
     def showDatasetFromFileName(self,filename):
-        # img = ImageTk.PhotoImage(Image.open(filename))
-        # if self.counter == 0:
-        #     self.Datasetpanel = ttk.Label(self.DatasetFrame, image=img)
-        #     self.Datasetpanel.grid(column=0, row=0)
-        #     self.DatasetFrame.place(x=20, y=200)
-        #     print("ilk resim olustu")
-        # self.DatasetFrame.image = (img)
-        # print(filename)
-        # print(self.counter)
-        # self.counter=self.counter+1
-        # ikinci browse yaptiginda eski nesneyi silcek yeniden eklicek
         image = Image.open(filename)
         image = image.resize((600, 200), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(image)
@@ -167,6 +159,10 @@ class userInterface(Tk):
         self.Datasetpanel.grid(column=0, row=0)
         self.DatasetFrame.place(x=20, y=200)
         self.DatasetFrame.image = (img)
+        self.nextStepButton = ttk.Button(self.page1,
+                                         text="Next")
+        self.nextStepButton.configure(state=DISABLED)
+        self.nextStepButton.place(x=650, y=380)
 
     def showDatasetfromImage(self, imageParam):
 
