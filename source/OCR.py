@@ -6,6 +6,7 @@ from tkinter import messagebox
 import numpy as np
 from PIL import ImageTk, Image
 import sys
+import  time
 
 from source.UserInterface import userInterface
 
@@ -22,10 +23,11 @@ class Ocr():
 
     def showDatasetfromImage(self,image,string):
 
+
         self.gui.showDatasetfromImage(image)
         self.gui.DatasetFrame.configure(text=string)
         self.gui.update()
-
+        time.sleep(0.3)
         # cv2.waitKey(0)
     #     next butonunu bekleme olayi
     def preprocess(self):
@@ -90,11 +92,15 @@ class Ocr():
 
 
 
-            cv2.imshow("Training Numbers", self.image)
+            #cv2.imshow("Training Numbers", self.image)
             self.showDatasetfromImage(self.image,"Training Numbers Segmentation")
 
-            intChar = cv2.waitKey(0)
-
+            #intChar = cv2.waitKey(0)
+            intChar = ord(self.gui.entry.get())
+            self.gui.entry.delete(0, END)
+            self.gui.update()
+            print(intChar)
+            time.sleep(2)
             if intChar == 27:                   # esc
                sys.exit()
             elif intChar in intValidChars:

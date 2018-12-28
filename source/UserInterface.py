@@ -55,9 +55,6 @@ class userInterface(Tk):
         tab_control.grid(column=0, row=0)
 
 
-
-
-
     def createMenu(self):
         menubar = Menu(self)
         filemenu = Menu(menubar, tearoff=0)
@@ -112,23 +109,28 @@ class userInterface(Tk):
         self.segmentationButton.configure(state=DISABLED)
         self.segmentationButton.place(x=20,y=100)
 
+        sv = StringVar()
+        sv.trace("w", lambda name, index, mode, sv=sv: self.callback(sv))
+        self.entry = ttk.Entry(self.page1, textvariable=sv)
+        self.entry.configure(state=DISABLED)
 
-        self.entry = ttk.Entry(self.page1, text="character")
-        #self.entry.configure(state=DISABLED)
+
+        #self.entry.set(self.entry.get()[:1])
         self.entry.place(x=20,y=140)
         self.exitButton = ttk.Button(self.page1,
                                      text="Exit", command=sys.exit)
         self.exitButton.place(x=800,y=500)
-        self.state = ttk.Label(self.page1,text="Mustafa")
+        self.state = ttk.Label(self.page1,text="")
         self.state.place(x=200,y=20)
 
-
-
-
+    def callback(self,sv):
+        c = sv.get()[0:1]
+        sv.set(c)
 
 
     def entryEnable(self,event):
         self.entry.configure(state=NORMAL)
+        self.update()
 
     def matchTemplate(self):
         self.browseButtonMatch = ttk.Button(self.page2, text="Browse", command=self.filedialogMatch)
@@ -143,9 +145,9 @@ class userInterface(Tk):
             messagebox.showerror("Error", "You did not select any photo! Browse again!")
         else:
             self.myOcr = OCR.Ocr(filename=self.filename,gui=myGUI)
-            self.nextStepButton = ttk.Button(self.page1,text="Next")
-            self.nextStepButton.configure(state=DISABLED)
-            self.nextStepButton.place(x=650, y=380)
+           # self.nextStepButton = ttk.Button(self.page1,text="Next")
+            #self.nextStepButton.configure(state=DISABLED)
+            #self.nextStepButton.place(x=650, y=380)
             self.showDatasetFromFileName(self.filename)
             self.image_path = self.filename
             # img = ImageTk.PhotoImage(Image.open(self.image_path))
