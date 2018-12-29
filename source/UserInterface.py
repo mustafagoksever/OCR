@@ -213,17 +213,20 @@ class userInterface(Tk):
 
 
     def showDatasetFromFileNameMatch(self, filename):
+
         image = Image.open(filename)
-        image = image.resize((600, 200), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(image)
-        self.Datasetpanel = ttk.Label(self.DatasetFrameMatch, image=img)
+        image = image.resize((600, 200))
+        image = ImageTk.PhotoImage(image)
+        self.Datasetpanel = ttk.Label(self.DatasetFrameMatch, image=image)
         self.Datasetpanel.grid(column=0, row=0)
         self.DatasetFrameMatch.place(x=20, y=200)
-        self.DatasetFrameMatch.image = (img)
+        self.DatasetFrameMatch.image = (image)
 
     def showDatasetfromImageMatch(self, imageParam):
 
+
         imageParam = cv2.resize(imageParam,(600, 200))
+
         image = Image.fromarray(imageParam)
 
         image = ImageTk.PhotoImage(image)
@@ -274,7 +277,7 @@ class userInterface(Tk):
 
         else:
             self.myOcr = OCR.Ocr(filename=self.filename,gui=myGUI)
-            self.state.config(text="ocr objesi olustu")
+
             self.showDatasetFromFileName(self.filename)
             self.preprocessButton.configure(state=NORMAL)
 

@@ -54,6 +54,7 @@ class Ocr():
         self.gui = gui
         self.image_path =filename
         self.image = cv2.imread(self.image_path)
+        self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         print("ocr nesnesi olustu")
 
     def showDatasetfromImage(self,image,string):
@@ -216,7 +217,7 @@ class Ocr():
         time.sleep(0.5)
 
         self.gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        self.gui.showDatasetfromImageMatch(self.image)
+        self.gui.showDatasetfromImageMatch(self.gray_image)
         self.gui.DatasetFrameMatch.configure(text="Gray Image")
         self.gui.update()
         time.sleep(0.5)
@@ -267,6 +268,7 @@ class Ocr():
             imgROI = self.gray_image[y:y + h, x:x + w]
             # thresholdan alabiliriz
             # imgROI = cv2.resize(imgROI, (50, 50))
+
             self.gui.showDatasetfromImageMatch(self.image)
             self.gui.DatasetFrameMatch.configure(text="Image Segmentation")
             self.gui.update()
