@@ -4,9 +4,8 @@ from tkinter import filedialog
 from tkinter import messagebox
 from PIL import ImageTk, Image
 import numpy as np
-from source import OCR
+from source import OCR, MatchTemplate, Train, KNearest
 import cv2
-
 
 class userInterface(Tk):
     filename: object
@@ -19,6 +18,9 @@ class userInterface(Tk):
     page4: object
     binaryImage: object
     myOcr: object
+    myKNN: object
+    myMatch:object
+    myTrain:object
     DatasetFrame: object
     DatasetFrameMatch: object
     DatasetFrameKNN: object
@@ -38,9 +40,9 @@ class userInterface(Tk):
         self.createMenu()
         self.createTabs()
 
-        self.train()
-        self.matchTemplate()
-        self.KNN()
+        self.trainUI()
+        self.matchTemplateUI()
+        self.KNNUI()
 
     def createTabs(self):
         tab_control = ttk.Notebook(self, width=self.winfo_width(), height=self.winfo_height())
@@ -88,24 +90,24 @@ class userInterface(Tk):
         method()
         frameName.destroy()
 
-    def train(self):
+    def trainUI(self):
         self.browseButtonTrain = ttk.Button(self.page1, text="Browse",
                                             command=lambda: self.filedialog(frame=self.DatasetFrame,
                                                                             btn=self.preprocessButton))
-        #self.browseButton = ttk.Button(self.page1, text="Browse", command=self.filedialogTrain)
-        # self.browseButton.pack()
+
         self.browseButtonTrain.place(x=20, y=20)
         self.DatasetFrame = ttk.LabelFrame(self.page1, text="Dataset")
 
-        self.preprocessButton = ttk.Button(self.page1, text="Preprocess", command=lambda: [self.myOcr.preprocess(),
-                                                                                           self.segmentationButton.configure(
-                                                                                               state=NORMAL)])
+        self.preprocessButton = ttk.Button(self.page1, text="Preprocess", command=lambda: [self.myTrain.preprocess(),
+                                                                                        self.segmentationButton.configure(
+                                                                                           state=NORMAL)])
+
         self.preprocessButton.configure(state=DISABLED)
         self.preprocessButton.place(x=20, y=60)
 
         # enter binding yap
         self.segmentationButton = ttk.Button(self.page1,
-                                             text="Segmentation", command=lambda: self.myOcr.segmentation())
+                                             text="Segmentation", command=lambda: self.myTrain.segmentation())
         self.segmentationButton.bind('<Button-1>', self.entryEnable)
         self.segmentationButton.configure(state=DISABLED)
         self.segmentationButton.place(x=20, y=100)
@@ -117,13 +119,14 @@ class userInterface(Tk):
 
         # self.entry.set(self.entry.get()[:1])
         self.entry.place(x=20, y=140)
+
         self.exitButton = ttk.Button(self.page1,
                                      text="Exit", command=sys.exit)
         self.exitButton.place(x=800, y=500)
 
         # self.clipboard_clear()
         self.clearButton = ttk.Button(self.page1, text="Clear",
-                                      command=lambda: self.Clear(method=self.train, frameName=self.DatasetFrame))
+                                      command=lambda: self.Clear(method=self.trainUI, frameName=self.DatasetFrame))
         self.clearButton.place(x=700, y=400)
 
     def newmethod(self, event):
@@ -138,45 +141,49 @@ class userInterface(Tk):
 
     def entryEnable(self, event):
         self.entry.configure(state=NORMAL)
+        self.update()
 
-    def matchTemplate(self):
+    def matchTemplateUI(self):
         self.browseButtonMatch = ttk.Button(self.page2, text="Browse", command=lambda: self.filedialog(frame=self.DatasetFrameMatch,
                                                                                                        btn=self.testButton1))
-       # self.browseButtonMatch = ttk.Button(self.page2, text="Browse", command=self.filedialogMatch)
+
         self.browseButtonMatch.place(x=20, y=20)
         self.DatasetFrameMatch = ttk.LabelFrame(self.page2, text="Dataset")
         self.exitButton = ttk.Button(self.page2,
                                      text="Exit", command=sys.exit)
         self.exitButton.place(x=800, y=500)
+
         self.testButton1 = ttk.Button(self.page2,
-                                      text="Test", command=lambda: self.myOcr.matchTemplate())
+                                      text="Test", command=lambda: self.myMatch.matchTemplate())
+
         self.testButton1.configure(state=DISABLED)
         self.testButton1.place(x=20, y=60)
 
         # self.clipboard_clear()
         self.clearButton = ttk.Button(self.page2, text="Clear",
-                                      command=lambda: self.Clear(method=self.matchTemplate,
+                                      command=lambda: self.Clear(method=self.matchTemplateUI,
                                                                  frameName=self.DatasetFrameMatch))
         self.clearButton.place(x=700, y=400)
 
-    def KNN(self):
+    def KNNUI(self):
         self.browseButtonKNN = ttk.Button(self.page3, text="Browse",
                                             command=lambda: self.filedialog(frame=self.DatasetFrameKNN,
                                                                             btn=self.testButton2))
-        #self.browseButtonKNN = ttk.Button(self.page3, text="Browse", command=self.filedialogKNN)
+
         self.browseButtonKNN.place(x=20, y=20)
 
         self.exitButton = ttk.Button(self.page3,
                                      text="Exit", command=sys.exit)
         self.exitButton.place(x=800, y=500)
         self.DatasetFrameKNN = ttk.LabelFrame(self.page3, text="Dataset")
+
         self.testButton2 = ttk.Button(self.page3,
-                                      text="Test", command=lambda: self.myOcr.kNearest())
+                              text="Test", command=lambda: self.myKNN.kNearest())
         self.testButton2.place(x=20, y=60)
         self.testButton2.configure(state=DISABLED)
 
         self.clearButton = ttk.Button(self.page3, text="Clear",
-                                      command=lambda: self.Clear(method=self.KNN, frameName=self.DatasetFrameKNN))
+                                      command=lambda: self.Clear(method=self.KNNUI, frameName=self.DatasetFrameKNN))
         self.clearButton.place(x=700, y=400)
 
         self.exitButton = ttk.Button(self.page3,
@@ -192,7 +199,9 @@ class userInterface(Tk):
         if self.filename is "":
             messagebox.showerror("Error", "You did not select any photo! Browse again!")
         else:
-            self.myOcr = OCR.Ocr(filename=self.filename, gui=myGUI)
+            self.myKNN = KNearest.KNearest(filename=self.filename, gui=myGUI)
+            self.myMatch = MatchTemplate.MatchTemplate(filename=self.filename, gui=myGUI)
+            self.myTrain = Train.Train(filename=self.filename, gui=myGUI)
             selectedImage = self.imageOpen(self.filename)
             self.showDatasetfromImage(selectedImage, frame)
             self.image_path = self.filename
@@ -214,6 +223,14 @@ class userInterface(Tk):
         img = ImageTk.PhotoImage(image)
         return img
 
+if __name__ == '__main__':
+    myGUI = userInterface()
+
+    myGUI.mainloop()
+
+
+def getGUI():
+    return myGUI
 
 
   ## def filedialogMatch(self):
@@ -320,11 +337,4 @@ class userInterface(Tk):
   #      self.DatasetFrameKNN.image = (img)
 
 
-if __name__ == '__main__':
-    myGUI = userInterface()
 
-    myGUI.mainloop()
-
-
-def getGUI():
-    return myGUI
