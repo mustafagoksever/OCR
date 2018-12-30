@@ -57,11 +57,12 @@ class Ocr():
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         print("ocr nesnesi olustu")
 
-    def showDatasetfromImage(self,image,string):
+    def showDatasetfromImage(self, image, string, DataSetFrame):#parametre olarak sleep alabilirz
 
-
-        self.gui.showDatasetfromImage(image)
-        self.gui.DatasetFrame.configure(text=string)
+        newImage = self.imageConvert(image)
+        self.gui.showDatasetfromImage(newImage,DataSetFrame)
+        DataSetFrame.configure(text = string)
+        #self.gui.DatasetFrame.configure(text=string)
         self.gui.update()
         time.sleep(0.3)
         # cv2.waitKey(0)
@@ -72,11 +73,11 @@ class Ocr():
         gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         #cv2.imshow("Gray Image", gray_image)
 
-        self.showDatasetfromImage(gray_image,"Gray Image")
+        self.showDatasetfromImage(gray_image, "Gray Image", self.gui.DatasetFrame)
 
         blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
        # cv2.imshow("Blurred Image", blurred_image)
-        self.showDatasetfromImage(blurred_image, "Blurred Image")
+        self.showDatasetfromImage(blurred_image, "Blurred Image", self.gui.DatasetFrame)
         self.binaryImage = cv2.adaptiveThreshold(blurred_image,
                                           255,
                                           cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -91,7 +92,7 @@ class Ocr():
         # ret, binary = cv2.threshold(gray_image, 127, 256, cv2.THRESH_BINARY_INV)
        # cv2.imshow("Binary Image", self.binaryImage)
        # cv2.waitKey(0)#
-        self.showDatasetfromImage(self.binaryImage, "Binary Image")
+        self.showDatasetfromImage(self.binaryImage, "Binary Image",  self.gui.DatasetFrame)
 
         #messagebox.showinfo("Steps", "Preprocessed done! You can push Segmentation Button")
         cv2.destroyAllWindows()
@@ -129,7 +130,7 @@ class Ocr():
 
 
             #cv2.imshow("Training Numbers", self.image)
-            self.showDatasetfromImage(self.image,"Training Numbers Segmentation")
+            self.showDatasetfromImage(self.image,"Training Numbers Segmentation",  self.gui.DatasetFrame)##burda cagırınca 0.3 saniye bekliyor ondan acılmıyor entry
             #intChar = cv2.waitKey(0)
 
             intChar = self.gui.entry.get()
@@ -217,10 +218,12 @@ class Ocr():
         time.sleep(0.5)
 
         self.gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        self.gui.showDatasetfromImageMatch(self.gray_image)
-        self.gui.DatasetFrameMatch.configure(text="Gray Image")
-        self.gui.update()
-        time.sleep(0.5)
+
+        self.showDatasetfromImage(self.gray_image,"Gray Image", self.gui.DatasetFrameMatch)#parametre olarak sleep alabşlirm
+        ##self.gui.showDatasetfromImageMatch(self.gray_image)
+        #self.gui.DatasetFrameMatch.configure(text="Gray Image")
+        #self.gui.update()
+        #time.sleep(0.5)
 
         self.blurred_image = cv2.GaussianBlur(self.gray_image, (5, 5), 0)
         # thresh_image = cv2.adaptiveThreshold(blurred_image,  # input image
@@ -234,17 +237,20 @@ class Ocr():
         # # adaptive de biraz gurultu var duzelt
         # cv2.imshow("Gaussian Blur Image", self.blurred_image)
         # cv2.imshow("Gaussian Blur was converted to threshold", thresh_image)
-        self.gui.showDatasetfromImageMatch(self.blurred_image)
-        self.gui.DatasetFrameMatch.configure(text="Blurred Image")
-        self.gui.update()
-        time.sleep(0.5)
+        self.showDatasetfromImage(self.blurred_image, "Blurred Image", self.gui.DatasetFrameMatch)
+       # self.gui.showDatasetfromImageMatch(self.blurred_image)
+       # self.gui.DatasetFrameMatch.configure(text="Blurred Image")
+       # self.gui.update()
+       # time.sleep(0.5)
 
         ret, self.binary = cv2.threshold(self.gray_image, 127, 256, cv2.THRESH_BINARY_INV)
-        self.gui.showDatasetfromImageMatch(self.binary)
-        self.gui.DatasetFrameMatch.configure(text="Binary Image")
-        self.gui.update()
 
-        time.sleep(0.5)
+        self.showDatasetfromImage(self.binary, "Binary Image", self.gui.DatasetFrameMatch)
+        #self.gui.showDatasetfromImageMatch(self.binary)
+       #self.gui.DatasetFrameMatch.configure(text="Binary Image")
+       #self.gui.update()
+
+       #time.sleep(0.5)
         im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,
                                                     # retrieve the outermost contours only
                                                     cv2.CHAIN_APPROX_SIMPLE)  # compress horizontal, vertical, and diagonal           segments and leave only their                                                                               end points
@@ -269,9 +275,10 @@ class Ocr():
             # thresholdan alabiliriz
             # imgROI = cv2.resize(imgROI, (50, 50))
 
-            self.gui.showDatasetfromImageMatch(self.image)
-            self.gui.DatasetFrameMatch.configure(text="Image Segmentation")
-            self.gui.update()
+            self.showDatasetfromImage(self.image,"Image Segmentation", self.gui.DatasetFrameMatch)#burda bekleme yok mesela onun için başka parametre yazailbir
+           # self.gui.showDatasetfromImageMatch(self.image)
+           # self.gui.DatasetFrameMatch.configure(text="Image Segmentation")
+           # self.gui.update()
 
             cv2.imwrite("roi/" + str(a) + '.png', imgROI)
 
@@ -316,26 +323,29 @@ class Ocr():
     def kNearest(self):
 
         time.sleep(0.5)
+        #
         self.gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-
-        self.gui.showDatasetfromImageKNN(self.gray_image)
-        self.gui.DatasetFrameKNN.configure(text="Gray Image")
-        self.gui.update()
-        time.sleep(0.5)
+        self.showDatasetfromImage(self.gray_image,"Gray Image", self.gui.DatasetFrameKNN)
+       #self.gui.showDatasetfromImageKNN(self.gray_image)
+       #self.gui.DatasetFrameKNN.configure(text="Gray Image")
+       #self.gui.update()
+       #time.sleep(0.5)
 
 
         self.blurred_image = cv2.GaussianBlur(self.gray_image, (5, 5), 0)
-        self.gui.showDatasetfromImageKNN(self.blurred_image)
-        self.gui.DatasetFrameKNN.configure(text="Blurred Image")
-        self.gui.update()
-        time.sleep(0.5)
+        self.showDatasetfromImage(self.blurred_image, "Blurred Image", self.gui.DatasetFrameKNN)
+       # self.gui.showDatasetfromImageKNN(self.blurred_image)
+       # self.gui.DatasetFrameKNN.configure(text="Blurred Image")
+       # self.gui.update()
+       # time.sleep(0.5)
 
 
         ret, self.binary = cv2.threshold(self.gray_image, 127, 256, cv2.THRESH_BINARY_INV)
-        self.gui.showDatasetfromImageKNN(self.binary)
-        self.gui.DatasetFrameKNN.configure(text="Binary Image")
-        self.gui.update()
-        time.sleep(0.5)
+        self.showDatasetfromImage(self.binary, "Binary Image", self.gui.DatasetFrameKNN)
+        #self.gui.showDatasetfromImageKNN(self.binary)
+        #self.gui.DatasetFrameKNN.configure(text="Binary Image")
+        #self.gui.update()
+        #time.sleep(0.5)
 
         im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -355,11 +365,13 @@ class Ocr():
                 (x, y, w, h) = cv2.boundingRect(contourWithData.npaContour)
 
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                imgROI = self.binary[y:y + h, x:x + w]
-                self.gui.showDatasetfromImageKNN(self.image)
-                self.gui.DatasetFrameKNN.configure(text="Segmentation")
-                self.gui.update()
-                time.sleep(0.3)
+                imgROI = self.binary[y:y + h, x:x + w]#imgRoi kullanılmıyor
+
+                self.showDatasetfromImage(self.image, "Segmentation", self.gui.DatasetFrameKNN)
+               # self.gui.showDatasetfromImageKNN(self.image)
+               # self.gui.DatasetFrameKNN.configure(text="Segmentation")
+               # self.gui.update()
+               # time.sleep(0.3)
                 # thresholdan alabiliriz
             # #   # imgROI = cv2.resize(imgROI, (50, 50))
              #   cv2.imshow("Original Image", self.image)
@@ -426,4 +438,12 @@ class Ocr():
         messagebox.showinfo("Result", "The text is " + self.strFinalString)
         self.strFinalString=""
         cv2.waitKey(0)
+
+    def imageConvert(self, cvImage):
+
+        cvImage = cv2.resize(cvImage, (600, 200))
+        image = Image.fromarray(cvImage)
+        image = ImageTk.PhotoImage(image)
+        return image
+
 
