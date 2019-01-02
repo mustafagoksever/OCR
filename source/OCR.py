@@ -34,6 +34,25 @@ from source.UserInterface import userInterface
 #    def checkIfContourIsValid(self):
 #        if self.fltArea < MIN_CONTOUR_AREA: return False
 #        return True
+def preprocess(cvImage,gui,DatasetFrameName):
+    gray_image = cv2.cvtColor(cvImage, cv2.COLOR_BGR2GRAY)
+
+    showDatasetfromImage(gray_image, "Gray Image",
+                                  DatasetFrameName, gui=gui)  # parametre olarak sleep alabşlirm
+
+    blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
+    # threshold eksik
+    showDatasetfromImage(blurred_image, "Blurred Image", DatasetFrameName, gui=gui)
+
+    ret, binary = cv2.threshold(gray_image, 127, 256, cv2.THRESH_BINARY_INV)
+#     binary = cv2.adaptiveThreshold(blurred_image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+# cv2.THRESH_BINARY_INV,# invert so foreground will be white, background will be black
+# 11,  # size of a pixel neighborhood used to calculate threshold value
+# 2)  # constant subtracted from the mean or weighted mean
+
+    showDatasetfromImage(binary, "Binary Image", DatasetFrameName, gui=gui)
+    return binary,gray_image
+
 
 def imageConvert(cvImage):
     cvImage = cv2.resize(cvImage, (600, 200))

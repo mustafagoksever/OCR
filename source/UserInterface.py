@@ -24,12 +24,15 @@ class userInterface(Tk):
     DatasetFrame: object
     DatasetFrameMatch: object
     DatasetFrameKNN: object
+    clearButtonMatch :object
+    clearButtonKNN :object
+    clearButtonTrain:object
 
-    a: object
+
 
     def __init__(self):
         super(userInterface, self).__init__()
-        self.a = 0
+
 
         self.title("OCR")
         self.minsize(900, 600)
@@ -64,7 +67,7 @@ class userInterface(Tk):
         menubar = Menu(self)
         filemenu = Menu(menubar, tearoff=0)
         filemenu.add_command(label="New")
-        filemenu.add_command(label="Close", )
+
 
         filemenu.add_separator()  # -------------------------
 
@@ -72,23 +75,31 @@ class userInterface(Tk):
         menubar.add_cascade(label="File", menu=filemenu)
         editmenu = Menu(menubar, tearoff=0)
 
-        editmenu.add_separator()
+
 
         editmenu.add_command(label="Cut")
         editmenu.add_command(label="Copy")
-        editmenu.add_command(label="Paste")
         editmenu.add_command(label="Delete")
 
         menubar.add_cascade(label="Edit", menu=editmenu)
         helpmenu = Menu(menubar, tearoff=0)
-        helpmenu.add_command(label="Help Index")
-        helpmenu.add_command(label="About...")
+        helpmenu.add_command(label="Help Index",command=self.help)
+        helpmenu.add_command(label="About...",command=self.About)
+        helpmenu.add_command(label="Do you like us?",command=self.like)
         menubar.add_cascade(label="Help", menu=helpmenu)
-        self.config(menu=menubar)
 
+        self.config(menu=menubar)
+    def help(self):
+        messagebox.showinfo("Help", "Optical Character Recognition(OCR)\n\nOCR is the mechanical or electronic conversion of images of typed, printed text into machine-encoded text.")
+    def like(self):
+        messagebox.askyesno("Hey!","Do you like us?")
+
+    def About(self):
+        messagebox.showinfo("About Us", "MUSTAFA GOKSEVER\n14290099\n\nMUSTAFA AHMET DENIZ\n14290087\n\n\n\nANKARA UNIVERSITY\n2018")
     def Clear(self, method, frameName):
         method()
         frameName.destroy()
+
 
     def trainUI(self):
         self.browseButtonTrain = ttk.Button(self.page1, text="Browse",
@@ -98,14 +109,12 @@ class userInterface(Tk):
         self.browseButtonTrain.place(x=20, y=20)
         self.DatasetFrame = ttk.LabelFrame(self.page1, text="Dataset")
 
-        self.preprocessButton = ttk.Button(self.page1, text="Preprocess", command=lambda: [self.myTrain.preprocess(),
-                                                                                        self.segmentationButton.configure(
-                                                                                           state=NORMAL)])
+        self.preprocessButton = ttk.Button(self.page1, text="Preprocess", command=lambda: [self.myTrain.preprocess(),self.segmentationButton.configure(state=NORMAL)])
 
         self.preprocessButton.configure(state=DISABLED)
         self.preprocessButton.place(x=20, y=60)
 
-        # enter binding yap
+
         self.segmentationButton = ttk.Button(self.page1,
                                              text="Segmentation", command=lambda: self.myTrain.segmentation())
         self.segmentationButton.bind('<Button-1>', self.entryEnable)
@@ -125,9 +134,10 @@ class userInterface(Tk):
         self.exitButton.place(x=800, y=500)
 
         # self.clipboard_clear()
-        self.clearButton = ttk.Button(self.page1, text="Clear",
+        self.clearButtonTrain = ttk.Button(self.page1, text="Clear",
                                       command=lambda: self.Clear(method=self.trainUI, frameName=self.DatasetFrame))
-        self.clearButton.place(x=700, y=400)
+        self.clearButtonTrain.configure(state=DISABLED)
+        self.clearButtonTrain.place(x=700, y=400)
 
     def newmethod(self, event):
         self.a = 1
@@ -160,10 +170,11 @@ class userInterface(Tk):
         self.testButton1.place(x=20, y=60)
 
         # self.clipboard_clear()
-        self.clearButton = ttk.Button(self.page2, text="Clear",
+        self.clearButtonMatch = ttk.Button(self.page2, text="Clear",
                                       command=lambda: self.Clear(method=self.matchTemplateUI,
                                                                  frameName=self.DatasetFrameMatch))
-        self.clearButton.place(x=700, y=400)
+        self.clearButtonMatch.place(x=700, y=400)
+        self.clearButtonMatch.configure(state=DISABLED)
 
     def KNNUI(self):
         self.browseButtonKNN = ttk.Button(self.page3, text="Browse",
@@ -182,9 +193,10 @@ class userInterface(Tk):
         self.testButton2.place(x=20, y=60)
         self.testButton2.configure(state=DISABLED)
 
-        self.clearButton = ttk.Button(self.page3, text="Clear",
+        self.clearButtonKNN = ttk.Button(self.page3, text="Clear",
                                       command=lambda: self.Clear(method=self.KNNUI, frameName=self.DatasetFrameKNN))
-        self.clearButton.place(x=700, y=400)
+        self.clearButtonKNN.place(x=700, y=400)
+        self.clearButtonKNN.configure(state=DISABLED)
 
         self.exitButton = ttk.Button(self.page3,
                                      text="Exit", command=sys.exit)

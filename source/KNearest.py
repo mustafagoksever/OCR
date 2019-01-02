@@ -1,5 +1,8 @@
 import os
 import cv2
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
 from tkinter import messagebox
 import numpy as np
 import time
@@ -54,17 +57,7 @@ class KNearest():
 
         time.sleep(0.5)
 
-        self.gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-
-        self.ocr.showDatasetfromImage(self.gray_image, "Gray Image", self.gui.DatasetFrameKNN,gui=self.gui)
-
-        self.blurred_image = cv2.GaussianBlur(self.gray_image, (5, 5), 0)
-
-        self.ocr.showDatasetfromImage(self.blurred_image, "Blurred Image", self.gui.DatasetFrameKNN,gui=self.gui)
-
-        ret, self.binary = cv2.threshold(self.gray_image, 127, 256, cv2.THRESH_BINARY_INV)
-
-        self.ocr.showDatasetfromImage(self.binary, "Binary Image", self.gui.DatasetFrameKNN,gui=self.gui)
+        self.binary, self.gray_image = self.ocr.preprocess(self.image, self.gui, self.gui.DatasetFrameKNN)
 
         im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -141,5 +134,6 @@ class KNearest():
         messagebox.showinfo("Result", "The text is " + self.strFinalString)
         self.strFinalString = ""
         cv2.waitKey(0)
-
+        # self.gui.clear
+        self.gui.clearButtonKNN.configure(state=NORMAL)
 

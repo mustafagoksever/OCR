@@ -39,19 +39,7 @@ class MatchTemplate(object):
         text = ""
         self.gui.update()
         time.sleep(0.5)
-
-        self.gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-
-        self.ocr.showDatasetfromImage(self.gray_image, "Gray Image",
-                                  self.gui.DatasetFrameMatch,gui=self.gui)  # parametre olarak sleep alabşlirm
-
-        self.blurred_image = cv2.GaussianBlur(self.gray_image, (5, 5), 0)
-        #threshold eksik
-        self.ocr.showDatasetfromImage(self.blurred_image, "Blurred Image", self.gui.DatasetFrameMatch,gui=self.gui)
-
-        ret, self.binary = cv2.threshold(self.gray_image, 127, 256, cv2.THRESH_BINARY_INV)
-
-        self.ocr.showDatasetfromImage(self.binary, "Binary Image", self.gui.DatasetFrameMatch,gui=self.gui)
+        self.binary,self.gray_image= self.ocr.preprocess(self.image,self.gui,self.gui.DatasetFrameMatch)
 
         im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,
                                                     cv2.CHAIN_APPROX_SIMPLE)
@@ -66,7 +54,7 @@ class MatchTemplate(object):
             (x, y, w, h) = cv2.boundingRect(contour)
 
             cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            imgROI = self.gray_image[y:y + h, x:x + w]
+            imgROI = self.binary[y:y + h, x:x + w]
             # thresholdan alabiliriz
 
 
@@ -82,7 +70,7 @@ class MatchTemplate(object):
                 ret, binarydataset = cv2.threshold(Adataset_gray, 127, 256, cv2.THRESH_BINARY_INV)
 
                 we, he = imgROI.shape[::-1]
-                res = cv2.matchTemplate(Adataset_gray, imgROI, cv2.TM_CCOEFF_NORMED)
+                res = cv2.matchTemplate(binarydataset, imgROI, cv2.TM_CCOEFF_NORMED)
                 threshold = 0.85
 
                 # min max ekle
@@ -100,3 +88,4 @@ class MatchTemplate(object):
         print("The text is " + text)
 
         text = ""
+        self.gui.clearButtonMatch.configure(state=NORMAL)
