@@ -22,26 +22,26 @@ class Train(object):
 
     def preprocess(self):
 
-        # gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        # self.ocr.showDatasetfromImage(gray_image, "Gray Image", self.gui.DatasetFrame,gui=self.gui)
-        #
-        # blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
-        # self.ocr.showDatasetfromImage(blurred_image, "Blurred Image", self.gui.DatasetFrame,gui=self.gui)
-        #
-        # self.binaryImage = cv2.adaptiveThreshold(blurred_image,
-        #                                          255,
-        #                                          cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        #
-        #                                          cv2.THRESH_BINARY_INV,
-        #                                          # invert so foreground will be white, background will be black
-        #                                          11,  # size of a pixel neighborhood used to calculate threshold value
-        #                                          2)  # constant subtracted from the mean or weighted mean
-        #
-        # cv2.waitKey(0)
-        # self.ocr.showDatasetfromImage(self.binaryImage, "Binary Image", self.gui.DatasetFrame,gui=self.gui)
-        #
-        # cv2.destroyAllWindows()
-        self.binaryImage, self.gray_image = self.ocr.preprocess(self.image, self.gui, self.gui.DatasetFrame)
+        gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        self.ocr.showDatasetfromImage(gray_image, "Gray Image", self.gui.DatasetFrame,gui=self.gui)
+
+        blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
+        self.ocr.showDatasetfromImage(blurred_image, "Blurred Image", self.gui.DatasetFrame,gui=self.gui)
+
+        self.binaryImage = cv2.adaptiveThreshold(blurred_image,
+                                                 255,
+                                                 cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+
+                                                 cv2.THRESH_BINARY_INV,
+                                                 # invert so foreground will be white, background will be black
+                                                 11,  # size of a pixel neighborhood used to calculate threshold value
+                                                 2)  # constant subtracted from the mean or weighted mean
+
+        cv2.waitKey(0)
+        self.ocr.showDatasetfromImage(self.binaryImage, "Binary Image", self.gui.DatasetFrame,gui=self.gui)
+
+        cv2.destroyAllWindows()
+        # self.binaryImage, self.gray_image = self.ocr.preprocess(self.image, self.gui, self.gui.DatasetFrame)
 
     def segmentation(self):
 
