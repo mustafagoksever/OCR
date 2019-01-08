@@ -142,7 +142,7 @@ class KNearest():
         self.strCurrentChar = ""
         self.allContoursWithData.clear()
         self.validContoursWithData.clear()
-        
+
 
         self.gui.clearButtonKNN.configure(state=NORMAL)
 
