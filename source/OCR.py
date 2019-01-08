@@ -44,7 +44,16 @@ def preprocess(cvImage,gui,DatasetFrameName):
     # threshold eksik
     showDatasetfromImage(blurred_image, "Blurred Image", DatasetFrameName, gui=gui)
 
-    ret, binary = cv2.threshold(gray_image, 127, 256, cv2.THRESH_BINARY_INV)
+    # ret, binary = cv2.threshold(gray_image, 127, 256, cv2.THRESH_BINARY_INV)
+
+    binary = cv2.adaptiveThreshold(blurred_image,
+                                             255,
+                                             cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+
+                                             cv2.THRESH_BINARY_INV,
+                                             # invert so foreground will be white, background will be black
+                                             11,  # size of a pixel neighborhood used to calculate threshold value
+                                             2)  #
 #     binary = cv2.adaptiveThreshold(blurred_image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
 # cv2.THRESH_BINARY_INV,# invert so foreground will be white, background will be black
 # 11,  # size of a pixel neighborhood used to calculate threshold value

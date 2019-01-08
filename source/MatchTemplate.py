@@ -23,7 +23,7 @@ RESIZED_IMAGE_HEIGHT = 30
 class MatchTemplate(object):
     image: object
     binaryImage: object
-
+    text: object
     def __init__(self, filename, gui):
         self.ocr = OCR
         self.gui = gui
@@ -35,7 +35,6 @@ class MatchTemplate(object):
 
 
     def matchTemplate(self):
-        text: object
         text = ""
         self.gui.update()
         time.sleep(0.5)
@@ -78,7 +77,7 @@ class MatchTemplate(object):
                 top_left = max_loc
                 bottom_right = (top_left[0] + we, top_left[1] + he)
                 if (max_val >= threshold):
-                    print(x + " bulundu....")
+                    print(x + " found....")
                     text = text + x
                     break
 

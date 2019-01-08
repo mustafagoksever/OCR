@@ -25,17 +25,7 @@ class Train(object):
         gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.ocr.showDatasetfromImage(gray_image, "Gray Image", self.gui.DatasetFrame,gui=self.gui)
 
-        blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
-        self.ocr.showDatasetfromImage(blurred_image, "Blurred Image", self.gui.DatasetFrame,gui=self.gui)
-
-        self.binaryImage = cv2.adaptiveThreshold(blurred_image,
-                                                 255,
-                                                 cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-
-                                                 cv2.THRESH_BINARY_INV,
-                                                 # invert so foreground will be white, background will be black
-                                                 11,  # size of a pixel neighborhood used to calculate threshold value
-                                                 2)  # constant subtracted from the mean or weighted mean
+        self.binaryImage,self.gray_image= self.ocr.preprocess(self.image,self.gui,self.gui.DatasetFrame)
 
         cv2.waitKey(0)
         self.ocr.showDatasetfromImage(self.binaryImage, "Binary Image", self.gui.DatasetFrame,gui=self.gui)
@@ -75,10 +65,13 @@ class Train(object):
                                       self.gui.DatasetFrame,gui=self.gui)  ##burda cagırınca 0.3 saniye bekliyor ondan acılmıyor entry
 
 
-            intChar = self.gui.entry.get()
-            self.gui.update()
-            print(intChar)
-            time.sleep(0.5)
+            # intChar = self.gui.entry.get()
+            cv2.imshow("Binary Character",imgROI)
+            intChar = cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            # self.gui.update()
+            # print(intChar)
+            # time.sleep(0.5)
             if intChar == 27:  # esc
                 sys.exit()
             elif intChar in intValidChars:
@@ -86,7 +79,7 @@ class Train(object):
 
                 npaFlattenedImage = imgROIResized.reshape((1, 20 * 30))
                 npaFlattenedImages = np.append(npaFlattenedImages, npaFlattenedImage, 0)
-            self.gui.entry.bind('<Return>', self.gui.newmethod)
+            # self.gui.entry.bind('<Return>', self.gui.newmethod)
 
         floatClassifications = np.array(intClassifications, np.float32)
 

@@ -42,7 +42,8 @@ class KNearest():
     allContoursWithData = []
     validContoursWithData = []
     kNearest: object
-    npaROIResized: object
+    strCurrentChar =""
+
     strFinalString = ""
 
     def __init__(self, filename, gui):
@@ -51,11 +52,12 @@ class KNearest():
         self.image = cv2.imread(self.image_path)
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         self.ocr = OCR
+
         print("KNN nesnesi olustu")
 
     def kNearest(self):
 
-        time.sleep(0.5)
+        time.sleep(0.3)
 
         self.binary, self.gray_image = self.ocr.preprocess(self.image, self.gui, self.gui.DatasetFrameKNN)
 
@@ -77,7 +79,7 @@ class KNearest():
                 (x, y, w, h) = cv2.boundingRect(contourWithData.npaContour)
 
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                imgROI = self.binary[y:y + h, x:x + w]  # imgRoi kullanılmıyor
+                # imgROI = self.binary[y:y + h, x:x + w]  # imgRoi kullanılmıyor
 
                 self.ocr.showDatasetfromImage(self.image, "Segmentation", self.gui.DatasetFrameKNN, gui=self.gui)
 
@@ -117,7 +119,9 @@ class KNearest():
                      contourWithData.intRectX: contourWithData.intRectX + contourWithData.intRectWidth]
 
             imgROIResized = cv2.resize(imgROI, (RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT))
-
+            # cv2.imshow("karakter",imgROIResized)
+            # cv2.waitKey()
+            # cv2.destroyAllWindows()
             self.npaROIResized = imgROIResized.reshape(
                 (1, RESIZED_IMAGE_WIDTH * RESIZED_IMAGE_HEIGHT))  # flatten image into 1d numpy array
 
@@ -125,15 +129,20 @@ class KNearest():
                 self.npaROIResized)  # convert from 1d numpy array of ints to 1d numpy array of floats
             retval, npaResults, neigh_resp, dists = self.kNearest.findNearest(self.npaROIResized, k=1)
 
-            strCurrentChar = str(chr(int(npaResults[0][0])))
-            print(strCurrentChar)
-            self.strFinalString = self.strFinalString + strCurrentChar
+            self.strCurrentChar = str(chr(int(npaResults[0][0])))
+
+            print(self.strCurrentChar)
+            self.strFinalString = self.strFinalString + self.strCurrentChar
+            npaContour=None
 
         print("\n" + self.strFinalString + "\n")
 
         messagebox.showinfo("Result", "The text is " + self.strFinalString)
         self.strFinalString = ""
-        cv2.waitKey(0)
-        # self.gui.clear
+        self.strCurrentChar = ""
+        self.allContoursWithData.clear()
+        self.validContoursWithData.clear()
+        
+
         self.gui.clearButtonKNN.configure(state=NORMAL)
 

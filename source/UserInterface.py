@@ -123,11 +123,11 @@ class userInterface(Tk):
 
         sv = StringVar()
         sv.trace("w", lambda name, index, mode, sv=sv: self.callback(sv))
-        self.entry = ttk.Entry(self.page1, textvariable=sv)
-        self.entry.configure(state=DISABLED)
-
-        # self.entry.set(self.entry.get()[:1])
-        self.entry.place(x=20, y=140)
+        # self.entry = ttk.Entry(self.page1, textvariable=sv)
+        # self.entry.configure(state=DISABLED)
+        #
+        # # self.entry.set(self.entry.get()[:1])
+        # self.entry.place(x=20, y=140)
 
         self.exitButton = ttk.Button(self.page1,
                                      text="Exit", command=sys.exit)
