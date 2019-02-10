@@ -87,8 +87,8 @@ class Train(object):
 
         print("\ntraining complete !!\n")
 
-        np.savetxt("Classifications.txt", npaClassifications)
-        np.savetxt("Flattened_images.txt", npaFlattenedImages)
+        np.savetxt("Classifications2.txt", npaClassifications)
+        np.savetxt("Flattened_images2.txt", npaFlattenedImages)
         messagebox.showinfo("Generate Data", "Training complete !!")
         cv2.destroyAllWindows()
         self.gui.clearButtonTrain.configure(state=NORMAL)

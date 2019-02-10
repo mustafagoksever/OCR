@@ -6,6 +6,8 @@ from PIL import ImageTk, Image
 import numpy as np
 from source import OCR, MatchTemplate, Train, KNearest
 import cv2
+from source import SnapFromPhoneCamera
+
 
 class userInterface(Tk):
     filename: object
@@ -150,7 +152,7 @@ class userInterface(Tk):
         sv.set(c)
 
     def entryEnable(self, event):
-        self.entry.configure(state=NORMAL)
+
         self.update()
 
     def matchTemplateUI(self):
@@ -164,7 +166,7 @@ class userInterface(Tk):
         self.exitButton.place(x=800, y=500)
 
         self.testButton1 = ttk.Button(self.page2,
-                                      text="Test", command=lambda: self.myMatch.matchTemplate())
+                                      text="RUN", command=lambda: self.myMatch.matchTemplate())
 
         self.testButton1.configure(state=DISABLED)
         self.testButton1.place(x=20, y=60)
@@ -175,6 +177,18 @@ class userInterface(Tk):
                                                                  frameName=self.DatasetFrameMatch))
         self.clearButtonMatch.place(x=700, y=400)
         self.clearButtonMatch.configure(state=DISABLED)
+
+        self.phoneCameraMatch = ttk.Button(self.page2, text="Snap From Phone Camera",
+                                           command=lambda: self.phoneCamera())
+        self.phoneCameraMatch.place(x=100, y=20)
+
+
+        # self.snapFromPhoneButton = ttk.Button(self.page2,
+        #                                       text="Take a Photo From Phone Camera", command= self.filedialog())
+        #
+        #
+        # self.snapFromPhoneButton.place(x=200, y=60)
+
 
     def KNNUI(self):
         self.browseButtonKNN = ttk.Button(self.page3, text="Browse",
@@ -189,7 +203,7 @@ class userInterface(Tk):
         self.DatasetFrameKNN = ttk.LabelFrame(self.page3, text="Dataset")
 
         self.testButton2 = ttk.Button(self.page3,
-                              text="Test", command=lambda: self.myKNN.kNearest())
+                              text="RUN", command=lambda: self.myKNN.kNearest())
         self.testButton2.place(x=20, y=60)
         self.testButton2.configure(state=DISABLED)
 
@@ -206,8 +220,10 @@ class userInterface(Tk):
 
     def filedialog(self, frame , btn):
 
+
+        # browse butona tiklandiysa filedialog ac button1=browse
         self.filename = filedialog.askopenfilename(initialdir="/", title="Select a Picture",
-                                                   filetype=(('jpeg', '*.jpg'), ('png', '*.png')))
+                                   filetype=(('jpeg', '*.jpg'), ('png', '*.png')))
         if self.filename is "":
             messagebox.showerror("Error", "You did not select any photo! Browse again!")
         else:
@@ -234,6 +250,10 @@ class userInterface(Tk):
         image = image.resize((600, 200), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(image)
         return img
+
+    def phoneCamera(self):
+        pass
+
 
 if __name__ == '__main__':
     myGUI = userInterface()

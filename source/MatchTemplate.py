@@ -11,9 +11,9 @@ import sys
 import time
 import string
 import operator
-import source.sorting_contours
 
-from source import OCR
+
+from source import OCR, SnapFromPhoneCamera
 
 MIN_CONTOUR_AREA = 100
 
@@ -33,7 +33,10 @@ class MatchTemplate(object):
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         print("Match Template nesnesi olustu")
 
+    def TakePhotoFromPhoneCamera(self):
+        img = SnapFromPhoneCamera.takeAPhotoFromPhoneCamere()
 
+        cv2.imshow("kjbkj",self.img)
 
     def matchTemplate(self):
         text = ""
