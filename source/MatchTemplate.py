@@ -30,6 +30,7 @@ class MatchTemplate(object):
         self.gui = gui
         self.image_path = filename
         self.image = cv2.imread(self.image_path)
+        self.imageCopy = self.image.copy()
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         print("Match Template nesnesi olustu")
 
@@ -42,7 +43,7 @@ class MatchTemplate(object):
         text = ""
         self.gui.update()
         time.sleep(0.5)
-        self.binary,self.gray_image= self.ocr.preprocess(self.image,self.gui,self.gui.DatasetFrameMatch)
+        self.binary, self.gray_image, self.binaryCopy = self.ocr.preprocess(self.image,self.gui,self.gui.DatasetFrameMatch)
 
         im2, contours, hierarchy = cv2.findContours(self.binary, cv2.RETR_EXTERNAL,
                                                     cv2.CHAIN_APPROX_SIMPLE)

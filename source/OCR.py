@@ -6,6 +6,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
 import numpy as np
+from IPython.lib import kernel
 from PIL import ImageTk, Image
 import sys
 import time
@@ -59,8 +60,15 @@ def preprocess(cvImage,gui,DatasetFrameName):
 # 11,  # size of a pixel neighborhood used to calculate threshold value
 # 2)  # constant subtracted from the mean or weighted mean
 
+    #kernel = np.ones((5, 5), np.uint8)
+   # binaryCopy = binary.copy()
+
+   # binary = cv2.morphologyEx(binaryCopy, cv2.MORPH_OPEN, kernel)
+    #binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+    binaryCopy = binary.copy()
     showDatasetfromImage(binary, "Binary Image", DatasetFrameName, gui=gui)
-    return binary,gray_image
+
+    return binary,gray_image,binaryCopy
 
 
 def imageConvert(cvImage):
@@ -76,6 +84,8 @@ def showDatasetfromImage(image, string, DataSetFrame,gui):  # parametre olarak s
     gui.update()
     time.sleep(0.3)
     # cv2.waitKey(0
+
+
 
 #class Ocr():
 #    image: object

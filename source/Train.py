@@ -17,6 +17,7 @@ class Train(object):
         self.ocr = OCR
         self.image_path = filename
         self.image = cv2.imread(self.image_path)
+        self.imageCopy = self.image.copy()
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         print("Train nesnesi olustu")
 
@@ -25,7 +26,7 @@ class Train(object):
         gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.ocr.showDatasetfromImage(gray_image, "Gray Image", self.gui.DatasetFrame,gui=self.gui)
 
-        self.binaryImage,self.gray_image= self.ocr.preprocess(self.image,self.gui,self.gui.DatasetFrame)
+        self.binaryImage, self.gray_image, self.binaryCopy = self.ocr.preprocess(self.image,self.gui,self.gui.DatasetFrame)
 
         cv2.waitKey(0)
         self.ocr.showDatasetfromImage(self.binaryImage, "Binary Image", self.gui.DatasetFrame,gui=self.gui)
